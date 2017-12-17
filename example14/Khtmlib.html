@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>http://maplib.khtml.org/</title>
+</head>
+
+<body>
+    <div id="map" style="width:800px;height:500px"> </div>
+<script type="text/javascript" src="http://maplib.khtml.org/khtml.maplib/khtml_all.js"> </script>
+<script type="text/javascript" > 
+//api http://maplib.khtml.org/maplib/v0.98.6/doc/api/
+var map=khtml.maplib.Map(document.getElementById("map"));
+map.centerAndZoom(new khtml.maplib.LatLng(38.430946615106265,13.238569903377112),1) //latitude, longitude, zoom
+</script>
+</body>
+
+</html>
