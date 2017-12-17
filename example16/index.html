@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>View padding - 4.6</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    #sidebar {
+      z-index: 99;
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      width: 320px;
+    }
+
+    #text {
+      color: white;
+      padding: 3%;
+    }
+  </style>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.6/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.6/"></script>
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "dojo/domReady!"
+    ], function(
+      Map,
+      MapView
+    ) {
+
+      // Create the Map
+      var map = new Map({
+        basemap: "dark-gray"
+      });
+
+      // Create the view set the view padding to be 320 px from the right
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [116.397428, 39.90923], // Liberty Island, NY, USA
+        zoom: 12
+      });
+
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv">
+  </div>
+</body>
+</html>
