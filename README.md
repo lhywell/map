@@ -29,6 +29,8 @@
 	- [Bing](https://github.com/lhywell/map/blob/master/2.4README.md)
 	- [OpenStreetMap](https://github.com/lhywell/map/blob/master/2.5README.md)
 	- [OpenLayers](https://github.com/lhywell/map/blob/master/2.6README.md)
+	- [ArcGIS](https://github.com/lhywell/map/blob/master/2.7README.md)
+	- [MapQuest](https://github.com/lhywell/map/blob/master/2.8README.md)
 
 	相关：
 

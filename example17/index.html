@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>MapQuest</title>
+    <style>
+    html,
+    body {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+    }
+    </style>
+    <script src="https://api.mqcdn.com/sdk/mapquest-js/v1.2.0/mapquest.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://api.mqcdn.com/sdk/mapquest-js/v1.2.0/mapquest.css" />
+</head>
+
+<body>
+    <div id="map" style="width:1000px; height:400px;"></div>
+    <script type="text/javascript">
+    L.mapquest.key = 'IEH6tmG8IIjCMUGcfnqxBbwY56Mv4Xwe';
+
+    // 'map' refers to a <div> element with the ID map
+    L.mapquest.map('map', {
+        center: [37.7749, -122.4194],
+        layers: L.mapquest.tileLayer('map'),
+        zoom: 12
+    });
+    </script>
+</body>
+
+</html>
