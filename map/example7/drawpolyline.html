@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html> 
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+		<meta name="keywords" content="我秀地图"/>
+		<title>我秀地图－地图API－范例－绘制折线工具示例</title>
+		<script type="text/javascript" src="http://api.ishowchina.com/webapi/auth/v2?v=3.8.1&t=jsmap&ak=ec85d3648154874552835438ac6a02b2"></script>
+		<script type="text/javascript"><!--
+        var map, polylineTool,lastId, isClose=false;
+		function $(id) {
+			return document.getElementById(id);
+		}
+		//地图初始化
+        function init() {
+            map=new IMAP.Map("map", {
+                zoom:16,//初始化级别
+                center:new IMAP.LngLat(116.50516033,39.98685368)//中心点坐标
+            });
+			map.addControl(new LD.NavigationControl());//添加导航条
+			map.addControl(new LD.ScaleControl());//添加比例尺
+			map.plugin(['IMAP.Tool']);
+		}
+		//打开工具
+		function openTool() {
+			if(!polylineTool){
+				polylineTool=new LD.PolylineTool();
+				polylineTool.arrow = true;//预设值线是否带箭头属性
+				polylineTool.smoothFactor=false;
+				polylineTool.addEventListener(LD.Constants.ADD_OVERLAY,function(evt){
+					lastId=evt.overlay.getId();
+				},this);
+				map.addTool(polylineTool);
+			}
+			polylineTool.editabled = $("editId").checked;
+			polylineTool.autoClose = $("polylineisclose").checked;
+			console.log(polylineTool)
+			
+            polylineTool.setCursor(LD["MapConfig"]["API_REALM_NAME"]+"images/cur/ruler.cur");
+			polylineTool.open();
+		}
+		//关闭工具
+		function closeTool() {
+			if (polylineTool){
+				polylineTool.close();
+			}
+		}
+		//改变折线可编辑状态
+		function changeEditable() {
+			if(polylineTool){
+				polylineTool.editable($("editId").checked);
+			}	
+		}
+		//清除所有折线
+		function clearPolyline() {
+			if(polylineTool){
+				polylineTool.clear();
+			}
+		}
+		//删除指定的一条折线
+		function removeLastPolyline() {
+			if(lastId && polylineTool){
+				polylineTool.removeById(lastId);
+				lastId=null;
+			}
+		}
+		--></script>
+	</head>
+	<body onload="init()">
+	<div id="map" style="width:80%; height:90%;position: absolute;"></div>
+		<div style="position:absolute;right:5px;width:17%;height:90%;overflow-y:auto;font-size: 14px;">
+			<h2>基本操作：</h2>
+			<input type="checkbox" checked="true" id="polylineisclose" checked/>是否自动关闭工具<br />
+			<input type="checkbox" id="editId" checked="checked" onclick="changeEditable();"/>是否可编辑<br />
+			<br />
+			<input value="打开工具" type="button" onclick='openTool()' />
+			<input value="关闭工具" type="button" onclick='closeTool()' />
+			<br />
+			<hr />
+			<h2>功能操作：</h2>
+			<input value="删除最后一个折线" type="button" onclick='removeLastPolyline()' />
+			<input value="清除所有线" type="button" onclick='clearPolyline()' />
+			<br />
+			<label style="color: red;">提示：删除一条折线需要双击结束后删除</label>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>经纬度坐标系转换</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+    body,
+    html,
+    #allmap {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    </style>
+    <title>地图展示</title>
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+    <style type="text/css">
+    @charset "utf-8";
+    html,
+    body,
+    div,
+    span,
+    applet,
+    object,
+    iframe,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    blockquote,
+    pre,
+    a,
+    abbr,
+    acronym,
+    address,
+    big,
+    cite,
+    code,
+    del,
+    dfn,
+    em,
+    img,
+    ins,
+    kbd,
+    q,
+    s,
+    samp,
+    small,
+    strike,
+    strong,
+    sub,
+    sup,
+    tt,
+    var,
+    b,
+    u,
+    i,
+    center,
+    dl,
+    dt,
+    dd,
+    ol,
+    ul,
+    li,
+    fieldset,
+    form,
+    label,
+    legend,
+    table,
+    caption,
+    tbody,
+    tfoot,
+    thead,
+    tr,
+    th,
+    td,
+    article,
+    aside,
+    canvas,
+    details,
+    embed,
+    figure,
+    figcaption,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    output,
+    ruby,
+    section,
+    summary,
+    time,
+    mark,
+    audio,
+    video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    section {
+        display: block;
+    }
+
+    body {
+        line-height: 1;
+    }
+
+    ol,
+    ul {
+        list-style: none;
+    }
+
+    blockquote,
+    q {
+        quotes: none;
+    }
+
+    blockquote:before,
+    blockquote:after,
+    q:before,
+    q:after {
+        content: '';
+        content: none;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    .clearfix:after {
+        content: ".";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden;
+    }
+
+    .clearfix {
+        display: inline-block;
+    }
+
+    .clearfix {
+        display: block;
+    }
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        background: #e8e8e8;
+    }
+
+    .main {
+        width: 1170px;
+        margin: 0 auto;
+        padding-top: 20px
+    }
+    #operate-wrap-con {
+        margin-top: 10px;
+        text-align: center;
+    }
+    .JsTxtW-r {
+        width: 570px;
+    }
+    .pr {
+        position: relative;
+    }
+    .fl {
+        float: left;
+        display: inline-block;
+    }
+    .ml20 {
+        margin-left: 20px;
+    }
+    all-base.css?v=201607:70 .pr {
+        position: relative;
+    }
+    all-base.css?v=201607:44 .fl {
+        float: left;
+        display: inline-block;
+    }
+    .bor-a1s {
+        border: 1px solid #c6cede !important;
+    }
+    .h200 {
+        height: 200px;
+    }
+    all-base.css?v=201607:25 textarea {
+        overflow: auto;
+        vertical-align: top;
+        outline: none;
+        resize: none;
+    }
+    .wwlr textarea.wwlr-l {
+        padding: 10px;
+    }
+    .JsTxtW-r .JsTxtCo {
+        width: 548px;
+    }
+    .search-hint,
+    .search-hint02 {
+        font-size: 14px;
+        color: #c0c1c4;
+        position: absolute;
+        left: 13px;
+        margin-top: 10px;
+        letter-spacing: normal;
+        font-weight: normal;
+        z-index: 0;
+        top: 0;
+        font-family: 'Microsoft YaHei';
+    }
+    .GuoLvCbtn {
+        position: relative;
+        right: 0;
+        float: right;
+        margin-right: 25px;
+        margin-top: 16px;
+    }
+    .GuoLvCbtn button {
+        padding: 0px 12px;
+        border: none;
+        height: 35px;
+        color: #0474c8;
+        font-size: 14px;
+        line-height: 35px;
+        text-align: center;
+        margin-left: 10px;
+        _padding: 0px 7px;
+        cursor: pointer;
+    }
+    .GuoLvCbtn button {
+        background-color: #55a7e3;
+        color: #fff;
+        font-family: 'Microsoft YaHei';
+    }
+    .GuoLvCbtn input {
+        padding: 0px 12px;
+        border: none;
+        height: 35px;
+        color: #0474c8;
+        font-size: 14px;
+        line-height: 35px;
+        text-align: center;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="clearfix">
+            <div class="pr JsTxtW-r fl">
+                <textarea class="JsTxtCo bor-a1s h200 WrapHid wwlr-l" name="content" id="content"></textarea>
+                <b class="search-hint CentHid" style="display: block;">请把你需要转换的内容粘贴在这里</b>
+            </div>
+            <div class="pr JsTxtW-r ml20 fl">
+                <textarea class="JsTxtCo bor-a1s h200 WrapHid wwlr-l" name="result" id="result"></textarea>
+                <b class="search-hint CentHid">转换后的结果</b>
+            </div>
+        </div>
+        <div class="GuoLvCbtn">
+            <button id="trans1">经纬度 转 纬经度</button>
+            <button id="trans2">纬经度 转 经纬度</button>
+            <input type="button" name="" id="clearContent" value="清空结果" />
+        </div>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+$('#content').click(function() {
+    $(this).siblings().text('');
+})
+
+function transform(event) {
+    console.log(event)
+    var val = $("#content").val();
+    if (!val) {
+        return;
+    }
+    var polygonLnglats = [],
+        len;
+    var lnglatarray = val.split(";");
+
+    var pointArr = [];
+    for (var i = 0; i < lnglatarray.length; i++) {
+        var item = lnglatarray[i];
+        lnglat = item.split(",");
+        var lng, lat;
+        if (event.data.msg == 1) {
+            lng = lnglat[0];
+            lat = lnglat[1];
+            pointArr.push([lat, lng]);
+        } else {
+            lng = lnglat[1];
+            lat = lnglat[0];
+            pointArr.push([lng, lat]);
+        }
+    }
+    $('#result').val(pointArr.join(';')).siblings().text('');
+}
+$('#trans1').click({ msg: 1 }, transform)
+$('#trans2').click({ msg: 2 }, transform)
+
+$('#clearContent').click(function() {
+    $('#content').val('').siblings().text('请把你需要转换的内容粘贴在这里');
+    $('#result').val('').siblings().text('转换后的结果');
+})
+</script>

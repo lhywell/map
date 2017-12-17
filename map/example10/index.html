@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+
+    <head>
+        <title>GetStarted</title>
+        <style>
+        html {
+            height: 100%
+        }
+        body {
+            height: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+        .mapcontainer {
+            height: 100%;
+        }
+        </style>
+        <script src='http://www.supermapol.com/resources/api/libs/SuperMap.Include.js'></script>
+        <style type="text/css">
+        div.smMap {
+            border: 0;
+        }
+        </style>
+    </head>
+
+    <body>
+        <div id="map" class="mapcontainer"></div>
+        <script>
+        var url = "http://www.supermapol.com";
+        var viewer = new SuperMap.Cloud.MapViewer(url, "map");
+        viewer.previewMapById(223627127);
+        </script>
+    </body>
+
+</html>

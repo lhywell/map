@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <script type="text/javascript" src="http://api.mapbar.com/api/mapbar31.2.js"></script>
+    <script>
+    function initMap() {
+        maplet = new Maplet("mapbar");
+        maplet.addControl(new MStandardControl());
+        maplet.centerAndZoom(new MPoint("HETCUFWVVHUEE"), 8);
+        maplet.showOverview(true, false); // Ó¥ÑÛ
+        avBubble.width = 280;
+        avBubble.height = 100;
+
+        var myicon = new MMarker(
+            new MPoint(116.34656, 39.92323),
+            new MIcon("http://union.mapbar.com/apidoc/images/detail_mark.gif", 24, 24)
+        );
+
+        maplet.addOverlay(myicon);
+
+        myicon.openInfoWindow();
+    }
+    </script>
+    <title>mapbar</title>
+</head>
+
+<body onload="initMap()">
+    <div class="mapBox">
+        <div id="mapbar" style="width: 705px; height: 400px;" align="left"></div>
+    </div>
+</body>
+
+</html>

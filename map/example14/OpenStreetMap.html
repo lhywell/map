@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+    <!--[if lt IE 9]><script src="/assets/html5shiv-d1295273bbbdfc82f369112016c2ee5e65571d280a767a019ad5e9ac4507a044.js"></script><![endif]-->
+    <link href="https://www.openstreetmap.org/" rel="canonical" />
+    <meta property="og:url" content="http://www.openstreetmap.org/" />
+    <script src="http://www.openstreetmap.org/assets/application-036fd993353962438f8937e355c6d44005f128d96747bfbf9dc0922ad8e410ea.js"></script>
+    <link rel="stylesheet" media="screen" href="http://www.openstreetmap.org/assets/screen-ltr-a0c723b42d2cc50a4e7a8c34d58a1e747af8994a28efbf416542daa5f23e9783.css">
+    <link rel="stylesheet" media="screen, print" href="http://www.openstreetmap.org/assets/leaflet-all-d811992364371af42d587b711ae020b0289867fde446048da4b0b7fea5fa93bf.css">
+    <!--[if IE]>
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon-bf2dfee28b5006e3ea82ef78ae7f42adc1e2024165fbd39cadc9517a7d2bd8bf.ico" />
+  <![endif]-->
+    <style type="text/css">
+    .map-layout #content {
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+    }
+    </style>
+    <!-- <script src="http://www.openstreetmap.org/assets/index-de6b5836db760fd7276b1ae4188a10a8232fc1a41664da8cae1de913c6a2538f.js"></script> -->
+    <script src="index.js"></script>
+    <script type="text/javascript">
+    OSM.PIWIK.location = 'http://piwik.openstreetmap.org'
+    </script>
+    <title>OpenStreetMap</title>
+</head>
+
+<body class="map-layout">
+    <!-- <header class="closed">
+        <nav class="primary">
+            <div class="search_forms">
+                <form method="GET" action="http://www.openstreetmap.org/search" class="search_form">
+                    <a class="button switch_link" title="查找两点之间的方向" href="http://www.openstreetmap.org/directions"><img class="button" src="./OpenStreetMap_files/directions-48d66684abd55f5458f7655691fdab6bf0c9ed50f6dfc090f37a9c885a22fc1b.png" alt="Directions"></a>
+                    <input type="submit" name="commit" value="提交" class="float">
+                    <div class="query_wrapper">
+                        <input type="text" name="query" id="query" placeholder="搜索" class="overflow">
+                        <a class="describe_location" title="使用搜索引擎说明当前位置" href="http://www.openstreetmap.org/#">这是哪里？</a>
+                    </div>
+                </form>
+                <form method="GET" action="http://www.openstreetmap.org/directions" class="directions_form">
+                    <div class="header"><span class="icon close"></span></div>
+                    <div class="line">
+                        <img class="routing_marker" data-type="from" draggable="true" src="./OpenStreetMap_files/marker-green-6ab0f726874fb10b3817b98e9e8dc8c4a67c15fc773ba04bcdebd053ca2393d8.png" alt="Marker green">
+                        <span class="force_width"><input type="text" name="route_from" id="route_from" placeholder="从"></span>
+                    </div>
+                    <div class="line">
+                        <img class="routing_marker" data-type="to" draggable="true" src="./OpenStreetMap_files/marker-red-7723e4f467deb3ceca1149eb950bf30c4c7d8f0e6bdbf0c0fcc83e5076a2a31a.png" alt="Marker red">
+                        <span class="force_width"><input type="text" name="route_to" id="route_to" placeholder="至"></span>
+                    </div>
+                    <div class="line">
+                        <select class="routing_engines" name="routing_engines">
+                            <option value="0">步行（GraphHopper）</option>
+                            <option value="1">汽车（GraphHopper）</option>
+                            <option value="2">汽车（Mapzen）</option>
+                            <option value="3">汽车（OSRM）</option>
+                            <option value="4">脚（Mapzen）</option>
+                            <option value="5">自行车（GraphHopper）</option>
+                            <option value="6">自行车（Mapzen）</option>
+                        </select>
+                        <input type="submit" name="commit" value="提交" class="routing_go">
+                    </div>
+                    <div class="loader_copy">
+                        <div class="loader"><img src="./OpenStreetMap_files/searching-d2110831ff86cb780e0911cd005e82482bfc71a0c626b56812ece6d52db2e6e0.gif" alt="Searching"></div>
+                    </div>
+                </form>
+            </div>
+        </nav>
+    </header> -->
+    <div id="content" class="overlay-sidebar">
+        <!-- <div id="sidebar">
+            <div class="search_forms">
+                <form method="GET" action="http://www.openstreetmap.org/search" class="search_form">
+                    <a class="button switch_link" title="查找两点之间的方向" href="http://www.openstreetmap.org/directions"><img class="button" src="./OpenStreetMap_files/directions-48d66684abd55f5458f7655691fdab6bf0c9ed50f6dfc090f37a9c885a22fc1b.png" alt="Directions"></a>
+                    <input type="submit" name="commit" value="提交" class="float">
+                    <div class="query_wrapper">
+                        <input type="text" name="query" id="query" placeholder="搜索" autofocus="autofocus" class="overflow">
+                        <a class="describe_location" title="使用搜索引擎说明当前位置" href="http://www.openstreetmap.org/#">这是哪里？</a>
+                    </div>
+                </form>
+                <form method="GET" action="http://www.openstreetmap.org/directions" class="directions_form">
+                    <div class="header"><span class="icon close"></span></div>
+                    <div class="line">
+                        <img class="routing_marker" data-type="from" draggable="true" src="./OpenStreetMap_files/marker-green-6ab0f726874fb10b3817b98e9e8dc8c4a67c15fc773ba04bcdebd053ca2393d8.png" alt="Marker green">
+                        <span class="force_width"><input type="text" name="route_from" id="route_from" placeholder="从"></span>
+                    </div>
+                    <div class="line">
+                        <img class="routing_marker" data-type="to" draggable="true" src="./OpenStreetMap_files/marker-red-7723e4f467deb3ceca1149eb950bf30c4c7d8f0e6bdbf0c0fcc83e5076a2a31a.png" alt="Marker red">
+                        <span class="force_width"><input type="text" name="route_to" id="route_to" placeholder="至"></span>
+                    </div>
+                    <div class="line">
+                        <select class="routing_engines" name="routing_engines">
+                            <option value="0">步行（GraphHopper）</option>
+                            <option value="1">汽车（GraphHopper）</option>
+                            <option value="2">汽车（Mapzen）</option>
+                            <option value="3">汽车（OSRM）</option>
+                            <option value="4">脚（Mapzen）</option>
+                            <option value="5">自行车（GraphHopper）</option>
+                            <option value="6">自行车（Mapzen）</option>
+                        </select>
+                        <input type="submit" name="commit" value="提交" class="routing_go">
+                    </div>
+                    <div class="loader_copy">
+                        <div class="loader"><img src="./OpenStreetMap_files/searching-d2110831ff86cb780e0911cd005e82482bfc71a0c626b56812ece6d52db2e6e0.gif" alt="Searching"></div>
+                    </div>
+                </form>
+            </div>
+            <div id="flash">
+            </div>
+            <div id="browse_status"></div>
+            <div id="sidebar_loader">
+                <img alt="正在载入..." class="loader" src="./OpenStreetMap_files/searching-d2110831ff86cb780e0911cd005e82482bfc71a0c626b56812ece6d52db2e6e0.gif">
+            </div>
+            <div id="sidebar_content">
+            </div>
+            <div id="banner">
+            </div>
+        </div> -->
+        <noscript>
+            &lt;div id="noscript"&gt; &lt;p&gt;您或许正在使用不支持 JavaScript 的浏览器，或您禁用了 JavaScript。&lt;/p&gt; &lt;p&gt;OpenStreetMap 使用 JavaScript 让地图更平滑。&lt;/p&gt; &lt;/div&gt;
+        </noscript>
+        <div id="map" tabindex="2" class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" style="">
+        </div>
+    </div>
+</body>
+
+</html>

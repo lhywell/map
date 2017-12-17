@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>地图API－范例－加载海量点</title>
+	<meta charset="UTF-8" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta tabindex="">
+	<link rel="stylesheet" type="text/css" href="http://demo.ishowchina.com/apidemos/sourceLinks/style.css" />
+	<script type="text/javascript" src="http://api.ishowchina.com/v4/webapi/js/auth?v=3.7.0&t=jsmap&ak=ec85d3648154874552835438ac6a02b2"></script>
+	
+	<script type="text/javascript" src="http://demo.ishowchina.com/apidemos/sourceLinks/massdata.js"></script>
+</head>
+<body>
+	<div id="map"  class="map_contaner"></div>
+	<div id="pannel" class="contro_panel_button contro_panel_button_bc" style="right:112px;">
+		<select id="countNum" class="button" onchange="toggleAdd()">
+			<option value="2">1万点</option>
+			<option value="4">2万点</option>
+			<option value="6">3万点</option>
+			<option value="8">4万点</option>
+			<option value="10">5万点</option>
+		</select>
+		<select id="style" class="button" onchange="toggleSetSelect()">
+			<option value="1">五角星</option>
+			<option value="2">圆点</option>
+			<option value="3">正方形</option>
+			<option value="4">气泡</option>
+			<option value="5">自定义图片</option>
+		</select>
+		<select id="color" class="button" onchange="toggleAdd()">
+			<option value="#F54312" selected>橘色</option>
+			<option value="blue">蓝色</option>
+			<option value="green">绿色</option>
+		</select>
+		<select id="size" class="button" onchange="toggleAdd()">
+			<option value="1">小</option>
+			<option value="2">中</option>
+			<option value="3">大</option>
+		</select>
+		<select id="alpha" class="button" onchange="toggleAdd()">
+			<option value="1">不透明</option>
+			<option value="0.5">半透明</option>
+			<option value="0.1">几乎透明</option>
+		</select>
+		<input type="button" class="button" value="删除海量点" onclick="toggleRemove()">
+	</div>
+	<div class="contro_panel contro_panel_position_bc">
+        <div class="content">
+			<input id="visible" type="checkbox" onclick="toggleVisible(this)" checked>是否显示&nbsp;
+        </div>
+    </div> 
+    <script type="text/javascript">
+	    var map, pointCollection=null;
+	    function initMap(){
+	        map=new IMAP.Map("map", {
+				minZoom:4,//最小地图级别
+				maxZoom:18,//最大地图级别
+				zoom:12,//初始化级别
+				center:new IMAP.LngLat(116.40976,39.90131)//中心点坐标
+	        });
+	        toggleAdd();//默认加载一万个点
+	    }
+	    //加载海量点
+	    function toggleAdd() {
+	    	var count = Number(document.getElementById("countNum").value);//获取加载数量
+	    	var color = document.getElementById("color").value;//获取设定颜色值
+	    	var style = Number(document.getElementById("style").value);//获取海量点类型
+	    	var size = Number(document.getElementById("size").value);//获取海量点大小
+	    	var alpha = Number(document.getElementById("alpha").value);//获取海量点整体透明度
+	    	var icon = null;//定义自定义图片对象
+	    	var visible = document.getElementById("visible");//获取海量点正式显示状态
+	    	
+	    	var datas = [];  // 添加海量点数据
+	        for (var i = 0; i < data.data.length; i++) {
+	        	datas.push({lnglat:new IMAP.LngLat(data.data[i][0], data.data[i][1]),data:{index:i}});//其余参数可自定义key-value
+	        }
+		  	//海量点数量
+	        var addPoints = data.data.slice()
+			
+		  	for(var j=1; j< count;j++){
+		  		for(var i=0;i< addPoints.length; i++){
+					datas.push({lnglat:new IMAP.LngLat(addPoints[i][0].add(j*0.2) , addPoints[i][1]),data:{index:i} })
+				}
+		  	}
+		  	if (style == 5) {
+		  		icon = new IMAP.Icon("http://demo.ishowchina.com/apidemos/sourceLinks/car.png", {
+            		size:new IMAP["Size"](43, 21)
+	  			})
+		  	} else {
+		  		icon = null;
+		  	}
+		  	
+		  	var options = {
+		  		size: size,
+			    shape: style,
+			    alpha: alpha,
+			    fillColor: '#F8BC46',
+			    icon: icon,
+			    visible: visible.checked
+			}
+		  
+           //初始化并添加海量点
+           if(pointCollection){
+        	   toggleRemove();
+           }
+	        console.log(datas)
+           pointCollection = new IMAP.PointCollection(datas,options);  // 初始化PointCollection
+ 		   map.getOverlayLayer().addOverlay(pointCollection);
+ 		   pointCollection.addEventListener(IMAP.Constants.MOUSE_UP, function (event) {
+ 			   //可获取选择点坐标及序号
+ 			   //经度： event.lnglat.lng    
+ 			   //纬度： event.lnglat.lat 
+ 			   //序号： event.data.index
+		   });
+          
+	    }
+	    //删除海量点
+	    function toggleRemove() {
+	    	if(pointCollection){
+	    		pointCollection.destroy();
+				pointCollection = null;
+			}
+	    }
+	    //用于切换下拉框样式
+	    function toggleSetSelect() {
+	    	var style = Number(document.getElementById("style").value);
+	    	var color = document.getElementById("color");
+	    	var size = document.getElementById("size");
+	    	if (style == 5) {
+	    		color.disabled=size.disabled="true";
+	    		color.style.backgroundColor=size.style.backgroundColor="#797777";
+	    	} else {
+	    		color.disabled=size.disabled=null;
+	    		color.style.backgroundColor=size.style.backgroundColor="#ff0000";
+	    	}
+	    	toggleAdd();
+	    }
+	    //设置海量点是否可显示
+	    function toggleVisible(checkbox) {
+	    	if (!pointCollection) {return;}
+		    if (checkbox.checked) {
+		    	pointCollection.visible(true);
+		    } else {
+		    	pointCollection.visible(false);
+		    }
+	    }
+	    /**
+		 ** 加法函数，用来得到精确的加法结果
+		 ** 说明：javascript的加法结果会有误差，在两个浮点数相加的时候会比较明显。这个函数返回较为精确的加法结果。
+		 ** 调用：accAdd(arg1,arg2)
+		 ** 返回值：arg1加上arg2的精确结果
+		 **/
+		function accAdd(arg1, arg2) {
+		    var r1, r2, m, c;
+		    try {
+		        r1 = arg1.toString().split(".")[1].length;
+		    }
+		    catch (e) {
+		        r1 = 0;
+		    }
+		    try {
+		        r2 = arg2.toString().split(".")[1].length;
+		    }
+		    catch (e) {
+		        r2 = 0;
+		    }
+		    c = Math.abs(r1 - r2);
+		    m = Math.pow(10, Math.max(r1, r2));
+		    if (c > 0) {
+		        var cm = Math.pow(10, c);
+		        if (r1 > r2) {
+		            arg1 = Number(arg1.toString().replace(".", ""));
+		            arg2 = Number(arg2.toString().replace(".", "")) * cm;
+		        } else {
+		            arg1 = Number(arg1.toString().replace(".", "")) * cm;
+		            arg2 = Number(arg2.toString().replace(".", ""));
+		        }
+		    } else {
+		        arg1 = Number(arg1.toString().replace(".", ""));
+		        arg2 = Number(arg2.toString().replace(".", ""));
+		    }
+		    return (arg1 + arg2) / m;
+		}
+		//给Number类型增加一个add方法，调用起来更加方便。
+		Number.prototype.add = function (arg) {
+		    return accAdd(arg, this);
+		};
+    	initMap(); 
+    </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html> 
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+		<meta name="keywords" content="我秀地图"/>
+		<title>我秀地图－地图API－范例－信息窗口示例</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script type="text/javascript" src="http://api.ishowchina.com/v4/webapi/js/auth?v=3.6.3&t=jsmap&ak=ec85d3648154874552835438ac6a02b2"></script>
+		<script type="text/javascript"><!--
+        var map,infowindow,typeFunction,ccloseEvt,closeEvt,removeEvt;
+		function $(id) {
+			return document.getElementById(id);
+		}
+		//地图初始化
+        function init() {
+			var mapOpt = new LD.MapOptions();
+			mapOpt.zoom = 15;
+			mapOpt.center = new LD.LngLat(116.4038573332,39.91524443385);
+            map = new LD.Map("map", mapOpt);
+			map.addControl(new LD.NavigationControl());//添加导航条
+			map.addControl(new LD.ScaleControl());//添加比例尺
+		}
+		//添加信息窗口
+		function addInfowindow() {
+			if(map){
+				removeInfowindow();
+				var lnglat=$("lnglat").value.split(",");
+				if(lnglat.length==2){
+					var title=$("title").value;
+					var content=$("content").value;
+					var w=$("w").value;
+					var h=$("h").value;
+					var type=setContentByType($("type"));
+					var offset=$("offset").value.split(",");
+					if(offset.length==2){
+						offset=new LD.Pixel(offset[0],offset[1]);
+					}
+					infowindow = new LD.InfoWindow(content,{
+						size : new LD.Size(w||0,h||0),
+						title: title,
+						position:new LD.LngLat(lnglat[0], lnglat[1]),
+						offset:offset,
+						anchor:getOverlayAnchor($("anchor").value),
+						type:type,
+						autoPan:true
+					});
+					infowindow.autoPan(true,[{x:300,y:100},{x:5,y:5}]);
+					setCCloseEvt();
+					setCloseEvt();
+					setRemoveEvt();
+					map.getOverlayLayer().addOverlay(infowindow);
+					map.getOverlayLayer().addOverlay(new LD.Marker(new LD.LngLat(lnglat[0], lnglat[1])));
+				}
+			}	
+		}
+		//删除信息窗口
+		function removeInfowindow() {
+			if(infowindow) {
+				$("evt").innerHTML="";
+				console.log(1)
+				//map.getOverlayLayer().removeOverlay(infowindow);
+				infowindow=null;
+				ccloseEvt=null;
+				closeEvt=null;
+				removeEvt=null;
+			}
+		}
+		//根据类型设置默认内容
+		function setContentByType(obj){
+			var typeV=obj.value;
+			if(typeV=="0"){
+				$("content").value="我是内容";
+				return LD.Constants.OVERLAY_INFOWINDOW_DEFAULT;
+				$("w").value = 300;
+			}else{
+				$("content").value="<div style='position:absolute;background-color:#0ff;width:200px;height:200px'><input name='desc' type='text' id='ld_tc' value='测试' onclick='getTextFocus(this)'/><p><input type='button' value='确定提交' onclick='removeInfowindow()'/><input type='button' onclick='removeInfowindow()' value='取消提交' />";
+				$("w").value = 200;
+				return LD.Constants.OVERLAY_INFOWINDOW_CUSTOM;
+			}
+		}
+		function getTextFocus(){
+			var obj=$("ld_tc").select();
+		}
+		//设置信息框的标题
+		function setTitle() {
+			if(infowindow) {
+				infowindow.setTitle(($("settitle").value));
+			}
+		}
+		//获取信息框的标题
+		function getTitle() {
+			if(infowindow) {
+				$("gettitle").value = infowindow.getTitle();
+			}
+		}
+		//设置信息框的内容
+		function setContent() {
+			if(infowindow) {
+				infowindow.setContent(($("setcontent").value));
+			}
+		}
+		//获取信息框的内容
+		function getContent() {
+			if(infowindow) {
+				$("getcontent").value =  infowindow.getContent();
+			}
+		}
+		//设置信息框区域的大小
+		function setSize() {
+			if(infowindow) {
+				infowindow.setSize(new LD.Size( $("setwidth").value, $("setheight").value));
+			}
+		}
+		//获取锚点值
+		function getOverlayAnchor(anchorValue){
+			switch(anchorValue) {
+				case "1": 
+					var a = LD.Constants.LEFT_TOP;
+					break; 
+				case "2": 
+					var a = LD.Constants.TOP_CENTER;
+					break;
+				case "3": 
+					var a = LD.Constants.RIGHT_TOP;
+					break;
+				case "4": 
+					var a = LD.Constants.RIGHT_CENTER;
+					break;
+				case "5": 
+					var a = LD.Constants.RIGHT_BOTTOM;
+					break;
+				case "6": 
+					var a = LD.Constants.BOTTOM_CENTER;
+					break;
+				case "7": 
+					var a = LD.Constants.LEFT_BOTTOM;
+					break;
+				case "8": 
+					var a = LD.Constants.LEFT_CENTER;
+					break;
+				case "9": 
+					var a = LD.Constants.CENTER;
+					break;
+				default: 
+					var a = LD.Constants.LEFT_TOP;
+			}
+			return a;			
+		}
+		//设置覆盖的锚点
+		function setAnchor(){
+			if(infowindow){
+				infowindow.setAnchor(getOverlayAnchor($("anchor").value));
+			}
+		}
+		//获取信息框锚点
+		function getAnchor(){
+			if(infowindow){
+				$("ganchor").innerHTML=infowindow.getAnchor().toString();
+			}
+		}
+		//设置信息框偏移量
+		function setOffset(){
+			if(infowindow){
+				var offset=$("offset").value.split(",");
+				if(offset.length==2){
+					infowindow.setOffset(new LD.Pixel(offset[0],offset[1]));
+				}
+			}		
+		}
+		//获取信息框偏移量值
+		function getOffset(){
+			if(infowindow){
+				var offset=infowindow.getOffset();
+				$("goffset").innerHTML="偏移量X值："+offset.getX()+";偏移量Y值："+offset.getY();
+			}
+		}
+		//设置鼠标抬起事件
+		function setCCloseEvt(){
+			if(infowindow){
+				var bool=$("cclose").checked;
+				if(bool && !ccloseEvt){
+					ccloseEvt=infowindow.addEventListener(LD.Constants.TIP_CLICK,function(){
+						showEvt("点击关闭按钮");
+					});
+				}else if(!bool && ccloseEvt){
+					infowindow.removeEventListener(ccloseEvt);
+					ccloseEvt=null;
+				}
+			}
+		}
+		//设置信息框切换显示关闭
+		function setCloseEvt(){
+			if(infowindow){
+				var bool=$("close").checked;
+				if(bool && !closeEvt){
+					closeEvt=infowindow.addEventListener(LD.Constants.TIP_CLOSE,function(){
+						showEvt("关闭信息框");
+					});
+				}else if(!bool && closeEvt){
+					infowindow.removeEventListener(closeEvt);
+					closeEvt=null;
+				}
+			}
+		}
+		//设置删除信息框事件
+		function setRemoveEvt(){
+			if(infowindow){
+				var bool=$("remove").checked;
+				if(bool && !removeEvt){
+					removeEvt=infowindow.addEventListener(LD.Constants.TIP_REMOVE,function(){
+						showEvt("删除信息框");
+					});
+				}else if(!bool && removeEvt){
+					infowindow.removeEventListener(removeEvt);
+					removeEvt=null;
+				}
+			}
+		}
+		function showEvt(evtName){
+			$("evt").innerHTML=evtName+"事件";
+		}
+		//重置marker的位置
+		function setPosition(){
+			if(infowindow){
+				var position=$("position").value.split(",");
+				if(position.length==2){
+					position=new LD.LngLat(position[0],position[1]);
+					infowindow.setPosition(position);
+				}
+			}
+		}
+    --></script>
+	</head>
+	<body onload="init()">
+		<div id="map" style="width:75%; height:99%;position: absolute;"></div>	
+		<div style="position:absolute;right:1px;width:24%;height:99%;font-size: 14px;line-height: 28px;overflow: auto;">
+			<h2>基础操作：</h2>
+			坐标位置：<input id="lnglat" value="116.367486,39.908638" size="20"/><br />
+			信息框类型：<select id="type" onclick="setContentByType(this);">
+							<option value="0">默认类型</option>
+							<option value="1">用户自定义</option>
+					   </select>
+			<br />
+			标题：<input id="title" value="我是标题" size="22"/>
+			<label style="color: red;font-size: 12px;">默认信息框时有效</label>
+			<br />
+			内容：<textarea style="font-size: 12px;" id="content" rows="3" cols="22">我是内容</textarea>
+			<br />
+			宽度：<input id="w" value="300" style="width: 50px;"/>&nbsp;
+			高度：<input id="h" value="200" style="width: 50px;"/>
+			<br />
+			<button onclick="addInfowindow();">添加信息框</button>
+			<button onclick="removeInfowindow();">删除信息框</button>
+			<hr />
+			<h2>功能操作：</h2>
+			<input id="settitle" style="width: 150px;" value="新标题"/>
+			<button onclick="setTitle();">设置标题</button>
+			<label style="color: red;font-size: 12px;">默认信息框时有效</label>
+			<br />
+			<input id="gettitle" style="width: 150px;"/>
+			<button onclick="getTitle();">获取标题</button>
+			<br /><br />
+			<input id="setcontent" style="width: 150px;" value="新内容"/>
+			<button onclick="setContent();">设置内容</button>
+			<br />
+			<input id="getcontent" style="width: 150px;"/>
+			<button onclick="getContent();">获取内容</button>
+			<br /><br />
+			
+			宽：<input id="setwidth" style="width: 65px;" value="400"/>
+			<br />
+			高：<input id="setheight" style="width: 65px;" value="300"/>
+			<br />
+			<button onclick="setSize();">设置大小</button>
+			<br />
+			信息框锚点：<select id="anchor">
+						  <option value ="1">左上</option>
+						  <option value ="2">上中</option>
+						  <option value ="3">右上</option>
+						  <option value ="4">右中</option>
+						  <option value ="5">右下</option>
+						  <option value ="6" selected="selected">底中</option>
+						  <option value ="7">左底</option>
+						  <option value ="8">左中</option>
+						  <option value ="9">中部</option>
+					</select>
+			<br />
+			<button onclick="setAnchor();">设置信息框锚点位置</button>
+			<br />
+			<button onclick="getAnchor();">获取信息框锚点位置</button>
+			&nbsp;
+			<label id="ganchor" style="color: red;font-size: 12px;"></label>
+			<br />
+			信息框偏移量值:<input id="offset" value="0,0" size="5" />
+			<button onclick="setOffset();">设置信息框偏移量</button>
+			<br />
+			<button onclick="getOffset();">获取信息框偏移是值</button>			
+			&nbsp;
+			<label id="goffset" style="color: red;font-size: 12px;"></label>
+			<br />
+			信息窗口新坐标：<input id="position" size="20" value="115.91413,28.662217" />
+			<br />
+			<button onclick="setPosition();">重置信息窗口位置</button>
+			<hr />
+			<h2>事件</h2>
+			点击关闭按钮事件：<input type="checkbox" checked="checked" id="cclose" onclick="setCCloseEvt();"/>
+			 信息框切换显示关闭事件：<input type="checkbox" checked="checked" id="close" onclick="setCloseEvt();"/>&nbsp;&nbsp;
+			 信息删除事件：<input type="checkbox" checked="checked" id="remove" onclick="setRemoveEvt();"/>
+			<br />
+			<label id="evt" style="color: red;"></label>
+		</div>
+	</body>
+</html>

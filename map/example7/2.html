@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>地图API－范例－自定义覆盖物图层</title>
+	<meta charset="UTF-8" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta tabindex="">
+	<link rel="stylesheet" type="text/css" href="http://demo.ishowchina.com/apidemos/sourceLinks/style.css" />
+	<script type="text/javascript" src="http://api.ishowchina.com/v4/webapi/js/auth?v=3.6.3&t=jsmap&ak=ec85d3648154874552835438ac6a02b2"></script>
+	
+</head>
+<body>
+	<div id="map"  class="map_contaner"></div>
+	<div id="pannel" class="contro_panel_button contro_panel_button_br">
+		<input type="button" class="button" value="叠加覆盖物图层" onclick="addOverlayLayer()">&nbsp;
+		<input type="button" class="button" value="添加多个覆盖物" onclick="addOverlays()">&nbsp;
+		<input type="button" class="button" value="移除覆盖物图层" onclick="removeOverlayLayer()">
+	</div> 
+    <script type="text/javascript">
+	    var map, overlayLayer, overlayers = [];
+	    function initMap(){
+	        map=new IMAP.Map("map", {
+				minZoom:4,//最小地图级别
+				maxZoom:18,//最大地图级别
+				zoom:12,//初始化级别
+				center:new IMAP.LngLat(116.40976,39.90131)//中心点坐标
+	        });
+	        removeOverlayLayer();
+	    }
+	    //叠加自定义覆盖物图层
+	    function addOverlayLayer() {
+	    	var id=map.getBGLayerIds()[0];
+	    	if (overlayLayer){return;}
+        	overlayLayer = new IMAP.OverlayLayer({
+				maxZoom:18,
+				minZoom:4
+			});
+			map.addLayer(overlayLayer);
+	    }
+	    //移除自定义覆盖物图层
+	    function removeOverlayLayer(){
+	    	if (!overlayLayer){return;}
+	    	map.removeLayer(overlayLayer);
+	    	overlayLayer = null;
+	    }
+		//添加多个覆盖物到自定义覆盖物图层
+		function addOverlays() {
+			if (!overlayLayer){
+				alert("请先添加自定义覆盖物图层！");
+			}
+			if (overlayers.length != 0){
+				overlayLayer.clear(overlayers);
+				overlayers = [];
+			}
+			var opts=new IMAP.MarkerOptions();
+				opts.anchor = IMAP.Constants.BOTTOM_CENTER;
+				opts.icon=new IMAP.Icon(IMAP.MapConfig.API_REALM_NAME+"images/point_1.png",{"size":new IMAP.Size(35, 30),"offset":new IMAP.Pixel(1, 0)});
+			var lnglat=new IMAP.LngLat(116.40976,39.90131);
+			if(lnglat){
+				var marker=new IMAP.Marker(lnglat, opts);
+				overlayers.push(marker);
+			}
+
+			var path='116.38504400000001,39.890383;116.398262,39.878136000000005;116.403411,39.889461000000004'.split(";");
+			var lineLnglats  = [],lnglat;
+			for(var i=0,len = path.length;i<len;i++){
+				lnglat= path[i].split(",");
+				lineLnglats.push(new IMAP.LngLat(lnglat[0],lnglat[1]));
+			}
+	    	var polyline=new IMAP.Polyline(lineLnglats, {"strokeOpacity" : 1});
+			path='116.41946200000001,39.897215;116.426843,39.874515;116.405986,39.868325000000006'.split(";");
+			var polygonLnglats  = [],len;
+			for(var i=0,len = path.length;i<len;i++){
+				lnglat= path[i].split(",");
+				polygonLnglats.push(new IMAP.LngLat(lnglat[0],lnglat[1]));
+			}
+	    	var polygon=new IMAP.Polygon(polygonLnglats, {"strokeOpacity" : 1});
+			var bounds='116.41946,39.89696;116.47843,39.92786'.split(";")
+			var sw = bounds[0].split(",");
+			var ne = bounds[1].split(",");
+			var rect = new IMAP.Rectangle(new IMAP.LngLatBounds(new IMAP.LngLat(sw[0],sw[1]),new IMAP.LngLat(ne[0],ne[1])), {"strokeOpacity" : 1});
+
+	    	var centerlnglat = new IMAP.LngLat(116.40976,39.90131);
+	    	var circle = new IMAP.Circle(centerlnglat,600, {"strokeOpacity" : 1});
+	    	overlayers.push(polyline);
+	    	overlayers.push(polygon);
+	    	overlayers.push(rect);
+	    	overlayers.push(circle);
+	    	overlayLayer.addOverlays(overlayers, true);
+		}
+    	initMap(); 
+    </script>
+</body>
+</html>

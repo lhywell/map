@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>坐标系转换-立德空间</title>
+    <meta charset="UTF-8" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta tabindex="">
+    <link rel="stylesheet" type="text/css" href="http://demo.ishowchina.com/apidemos/sourceLinks/style.css" />
+    <script type="text/javascript" src="http://api.ishowchina.com/v4/webapi/js/auth?v=3.8.1&t=jsmap&ak=ec85d3648154874552835438ac6a02b2"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+    <style>
+    @charset "utf-8";
+    html,
+    body,
+    div,
+    span,
+    applet,
+    object,
+    iframe,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    blockquote,
+    pre,
+    a,
+    abbr,
+    acronym,
+    address,
+    big,
+    cite,
+    code,
+    del,
+    dfn,
+    em,
+    img,
+    ins,
+    kbd,
+    q,
+    s,
+    samp,
+    small,
+    strike,
+    strong,
+    sub,
+    sup,
+    tt,
+    var,
+    b,
+    u,
+    i,
+    center,
+    dl,
+    dt,
+    dd,
+    ol,
+    ul,
+    li,
+    fieldset,
+    form,
+    label,
+    legend,
+    table,
+    caption,
+    tbody,
+    tfoot,
+    thead,
+    tr,
+    th,
+    td,
+    article,
+    aside,
+    canvas,
+    details,
+    embed,
+    figure,
+    figcaption,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    output,
+    ruby,
+    section,
+    summary,
+    time,
+    mark,
+    audio,
+    video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    section {
+        display: block;
+    }
+
+    body {
+        line-height: 1;
+    }
+
+    ol,
+    ul {
+        list-style: none;
+    }
+
+    blockquote,
+    q {
+        quotes: none;
+    }
+
+    blockquote:before,
+    blockquote:after,
+    q:before,
+    q:after {
+        content: '';
+        content: none;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    .clearfix:after {
+        content: ".";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden;
+    }
+
+    .clearfix {
+        display: inline-block;
+    }
+
+    .clearfix {
+        display: block;
+    }
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+    }
+    .main,
+    .map-con {
+        width: 100%;
+        height: 100%
+    }
+
+    .chart-con {
+        width: 1000px;
+        height: 100%;
+        margin: 0 auto;
+    }
+
+    .operate-con {
+        position: absolute;
+        right: 8px;
+        top: 20px;
+        width: 340px;
+        height: 58%;
+        background-color: #FFF;
+        overflow-y: auto;
+        text-align: center;
+        z-index: 9999;
+    }
+
+    #operate-wrap-con {
+        text-align: center;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="operate-con">
+        <div class="operate-btn-con">
+            <br>
+            <!-- <input type="button" id="clearAll" value="刷新"/>-->
+            <!-- <input type="button" id="clearBtn" value="清空"/>-->
+            <input type="button" id="addBtn" value="绘制" onclick="lide()" />
+            <!--<input type="button" id="formattingBtn" value="格式化"/>-->
+        </div>
+        <div id="operate-wrap-con">
+            <textarea id="streetCon" rows="23" cols="45"></textarea>
+        </div>
+    </div>
+    <div id="map" class="map_contaner"></div>
+    <script type="text/javascript">
+    var map, vectors = [];
+
+    function initMap() {
+        map = new IMAP.Map("map", {
+            minZoom: 4, //最小地图级别
+            maxZoom: 18, //最大地图级别
+            zoom: 12, //初始化级别
+            center: new IMAP.LngLat(116.40976, 39.90131) //中心点坐标
+        });
+    }
+
+    initMap();
+
+    function lide() {
+        var val = $("#streetCon").val();
+        if (!val) {
+            return;
+        }
+        var polygonLnglats = [],
+            len;
+        var lnglatarray = val.split(";");
+        var firstLng, firstLat;
+        for (var i = 0; i < lnglatarray.length; i++) {
+            var item = lnglatarray[i];
+            lnglat = item.split(",");
+            polygonLnglats.push(new IMAP.LngLat(lnglat[1], lnglat[0]));
+            if (i == 0) {
+                firstLng = lnglat[1];
+                firstLat = lnglat[0];
+            }
+        }
+        var polygon = new IMAP.Polygon(polygonLnglats, { strokeWeight: 2, "strokeOpacity": 0.5 });
+        vectors.push(polygon);
+        map.getOverlayLayer().addOverlays(vectors, false);
+        map.panTo(new IMAP.LngLat(firstLng, firstLat));
+    }
+    </script>
+</body>
+
+</html>

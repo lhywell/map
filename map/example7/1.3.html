@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>地图API－范例－POI关键字搜索</title>
+    <meta charset="UTF-8" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta tabindex="">
+    <link rel="stylesheet" type="text/css" href="http://demo.ishowchina.com/apidemos/sourceLinks/style.css" />
+    <script type="text/javascript" src="http://api.ishowchina.com/v4/webapi/js/auth?v=3.6.3&t=jsmap&ak=ec85d3648154874552835438ac6a02b2"></script>
+    <script src="http://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="http://demo.ishowchina.com/scripts/jsurl.js"></script>
+    <style type="text/css">
+    .contro_panel_position_ll {
+        left: 20px;
+        top: 20px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="map" class="map_contaner"></div>
+    <div class="contro_panel contro_panel_position_ll contro_panel_height" style="width:200px;height:50px;overflow-y: inherit;">
+        &nbsp;&nbsp;POI搜索：
+        <div style="margin-left: 12px;margin-top: 4px;" class="clearfix">
+            <input id="keyword" type="text" class="text">
+            <div id="suggestId" style="position: fixed;background-color: #ffffff;border: 1px solid #d1d1d1;visibility: visible; min-width: 151px; display: none;"></div>
+        </div>
+        <div class="" style="width:278px;margin-top: 14px;">
+            <div style='font-family: "Microsoft Yahei","Helvetica Neue",Helvetica,Arial,sans-serif;color: #565656;font-size: 12px;line-height: 22px;word-wrap: break-word;background-color: #fff;border: 1px solid silver;'>
+                <div id="resultDiv" style="background: #fff;"></div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var map, markers = [],
+        poiSearch, zIndexMarker;
+
+    function initMap() {
+        map = new IMAP.Map("map", {
+            minZoom: 4, //最小地图级别
+            maxZoom: 18, //最大地图级别
+            zoom: 12, //初始化级别
+            center: new IMAP.LngLat(116.40976, 39.90131) //中心点坐标
+        });
+        $('#keyword').change(function() {
+            doSearch($(this).val(), 1);
+        })
+
+    }
+
+    function doSearch(keyword, pageNo) {
+        if (map) {
+            var keyword = keyword,
+                city = '北京市';
+            map.getOverlayLayer().clear();
+            map.plugin(['IMAP.PoiSearch'], function() {
+                poiSearch = new IMAP.PoiSearch({ panel: "resultDiv", map: map, pageSize: 5, scope: "all" });
+                poiSearch.setPageNumber(parseInt(pageNo - 1));
+                poiSearch.search(keyword, city);
+            });
+        }
+    }
+    initMap();
+    </script>
+</body>
+
+</html>

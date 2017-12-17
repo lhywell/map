@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>坐标系转换-高德</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+    body,
+    html,
+    #allmap {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    </style>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css" />
+    <script src="http://cache.amap.com/lbs/static/es5.min.js"></script>
+    <script src="http://webapi.amap.com/maps?v=1.4.2&key=d8651efeb93531e6a2a44443426d8a05"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.0/jquery.min.js"></script>
+    <title>地图展示</title>
+    <style type="text/css">
+    @charset "utf-8";
+    html,
+    body,
+    div,
+    span,
+    applet,
+    object,
+    iframe,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    blockquote,
+    pre,
+    a,
+    abbr,
+    acronym,
+    address,
+    big,
+    cite,
+    code,
+    del,
+    dfn,
+    em,
+    img,
+    ins,
+    kbd,
+    q,
+    s,
+    samp,
+    small,
+    strike,
+    strong,
+    sub,
+    sup,
+    tt,
+    var,
+    b,
+    u,
+    i,
+    center,
+    dl,
+    dt,
+    dd,
+    ol,
+    ul,
+    li,
+    fieldset,
+    form,
+    label,
+    legend,
+    table,
+    caption,
+    tbody,
+    tfoot,
+    thead,
+    tr,
+    th,
+    td,
+    article,
+    aside,
+    canvas,
+    details,
+    embed,
+    figure,
+    figcaption,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    output,
+    ruby,
+    section,
+    summary,
+    time,
+    mark,
+    audio,
+    video {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
+
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    section {
+        display: block;
+    }
+
+    body {
+        line-height: 1;
+    }
+
+    ol,
+    ul {
+        list-style: none;
+    }
+
+    blockquote,
+    q {
+        quotes: none;
+    }
+
+    blockquote:before,
+    blockquote:after,
+    q:before,
+    q:after {
+        content: '';
+        content: none;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    .clearfix:after {
+        content: ".";
+        display: block;
+        height: 0;
+        clear: both;
+        visibility: hidden;
+    }
+
+    .clearfix {
+        display: inline-block;
+    }
+
+    .clearfix {
+        display: block;
+    }
+
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+    }
+    .main,
+    .map-con {
+        width: 100%;
+        height: 100%
+    }
+
+    .chart-con {
+        width: 1000px;
+        height: 100%;
+        margin: 0 auto;
+    }
+
+    .operate-con {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        width: 340px;
+        height: 70%;
+        background-color: #FFF;
+        overflow-y: auto;
+        text-align: center;
+        z-index: 9999;
+        padding: 0 20px;
+    }
+
+    #operate-wrap-con {
+        margin-top:10px;
+        text-align: center;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="operate-con">
+        <div class="operate-btn-con">
+            <br>
+            <!-- <input type="button" id="clearAll" value="刷新"/>-->
+            <!-- <input type="button" id="clearBtn" value="清空"/>-->
+            <input type="button" id="addBtn" value="不转换坐标" onclick="gaode()" />
+            <input type="button" id="addBtn" value="gps转高德" onclick="commonToGaode('gps','red')" />
+            <input type="button" id="addBtn" value="baidu转高德" onclick="commonToGaode('baidu','green')" />
+            <input type="button" id="addBtn" value="mapbar转高德" onclick="commonToGaode('mapbar','black')" />
+            <br>
+            <!--<input type="button" id="formattingBtn" value="格式化"/>-->
+        </div>
+        <div id="operate-wrap-con">
+            <textarea id="streetCon" rows="30" cols="45"></textarea>
+        </div>
+    </div>
+    <div id="container" class="map_contaner"></div>
+</body>
+
+</html>
+<script type="text/javascript">
+// 百度地图API功能
+var map = new AMap.Map('container', {
+    resizeEnable: true,
+    zoom: 12,
+    center: [116.397428, 39.90923]
+});
+
+/*********************不转换坐标******************************************/
+var firstLng, firstLat;
+
+function dataArray() {
+    var val = $("#streetCon").val();
+    if (!val) {
+        return;
+    }
+    var polygonLnglats = [],
+        len;
+    var lnglatarray = val.split(";");
+
+
+    for (var i = 0; i < lnglatarray.length; i++) {
+        var item = lnglatarray[i];
+        lnglat = item.split(",");
+        polygonLnglats.push([lnglat[1], lnglat[0]]);
+        if (i == 0) {
+            firstLng = lnglat[1];
+            firstLat = lnglat[0];
+        }
+    }
+    return polygonLnglats;
+}
+
+function gaode() {
+
+    var polygonLnglats = dataArray();
+
+    var polygon = new AMap.Polygon({
+        path: polygonLnglats, //设置多边形边界路径
+        strokeColor: "blue", //线颜色
+        strokeOpacity: 0.5, //线透明度
+        strokeWeight: 2, //线宽
+        fillColor: "#ffffff", //填充色
+        fillOpacity: 0.35 //填充透明度
+    });
+    polygon.setMap(map);
+    map.panTo([firstLng, firstLat]);
+}
+
+function commonToGaode(type, color) {
+    var newArray = [];
+    translateCallback = function(status, result) {
+        // console.log(status, result)
+        if (status == 'complete') {
+            newArray.push([result.locations[0].lng, result.locations[0].lat])
+        }
+    }
+
+    var val = $("#streetCon").val();
+    if (!val) {
+        return;
+    }
+    var polygonLnglats = [],
+        len;
+    var lnglatarray = val.split(";");
+
+
+    for (var i = 0; i < lnglatarray.length; i++) {
+        var item = lnglatarray[i];
+        lnglat = item.split(",");
+
+        AMap.convertFrom([lnglat[1], lnglat[0]], type, translateCallback)
+
+        // polygonLnglats.push();
+        if (i == 0) {
+            firstLng = lnglat[1];
+            firstLat = lnglat[0];
+        }
+    }
+
+    setTimeout(function() {
+        var polygon = new AMap.Polygon({
+            path: newArray, //设置多边形边界路径
+            strokeColor: color, //线颜色
+            strokeOpacity: 0.5, //线透明度
+            strokeWeight: 2, //线宽
+            fillColor: "#ffffff", //填充色
+            fillOpacity: 0.35 //填充透明度
+        });
+        polygon.setMap(map);
+    }, 1000)
+}
+</script>

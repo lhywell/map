@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quick Start - Leaflet</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+    <script src="Proj4Leaflet/lib/proj4-compressed.js"></script>
+    <script src="Proj4Leaflet/src/proj4leaflet.js"></script>
+</head>
+
+<body>
+    <div id="mapid" style="width: 600px; height: 400px;"></div>
+    <button id="button1">天地图</button>
+    <button id="button2">高德地图</button>
+    <button id="button3">百度地图</button>
+    <script>
+    console.log(L)
+    var mapObject = {}
+    document.getElementById('button1').onclick = function() {
+        console.log(1111)
+        mapObject.title = '天地图';
+        mapObject.url =
+            'http://t{s}.tianditu.cn/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={z}&TileRow={y}&TileCol={x}&style=default&format=tiles';
+        mapObject.subdomains = ["0", "1", "2", "3", "4", "5", "6", "7"];
+        setUp(mapObject)
+    }
+    document.getElementById('button2').onclick = function() {
+        console.log(222)
+        mapObject.title = '高德地图';
+        mapObject.url =
+            'http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}'
+        mapObject.subdomains = "1234";
+        setUp(mapObject)
+    }
+    document.getElementById('button3').onclick = function() {
+        mapObject.title = 'baidu地图';
+        mapObject.url =
+            'http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1&udt=20170406'
+        mapObject.subdomains = "01234";
+
+
+        var convertCoors = function(inputCoors) {
+            var x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+            var x = inputCoors[1];
+            var y = inputCoors[0];
+            var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
+            var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
+            var bmap_lon = z * Math.cos(theta) + 0.0065;
+            var bmap_lat = z * Math.sin(theta) + 0.006;
+            return [bmap_lat, bmap_lon];
+        };
+
+        var get_resolution = function() {
+            level = 19;
+            var res = [];
+            res[0] = Math.pow(2, 18);
+            for (var i = 1; i < level; i++) {
+                res[i] = Math.pow(2, (18 - i));;
+            }
+            return res;
+        };
+
+        var crs = new L.Proj.CRS('BDProj',
+            '+proj=merc +a=6378206.4 +b=6356583.8 +lat_ts=0.0 +lon_0=0.0 +x_0=0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs', {
+                resolutions: get_resolution(),
+                origin: [0, 0],
+                bounds: L.bounds([0, 20037508.342789244], [20037508.342789244, 0])
+            });
+
+        var mymap = L.map('mapid', {
+            crs: crs
+        }).setView(convertCoors([39.90960456049752, 116.3972282409668]), 13);
+
+        L.tileLayer(mapObject.url, {
+            maxZoom: 18,
+            minZoom: 3,
+            subdomains: mapObject.subdomains,
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            id: 'mapbox.streets',
+            tms: true
+        }).addTo(mymap);
+
+        L.marker([39.90960456049752, 116.3972282409668]).addTo(mymap)
+            .bindPopup(mapObject.title).openPopup();
+    }
+
+    function setUp(mapObject) {
+        var mymap = L.map('mapid').setView([39.90960456049752, 116.3972282409668], 13);
+
+        L.tileLayer(mapObject.url, {
+            maxZoom: 18,
+            minZoom: 3,
+            subdomains: mapObject.subdomains,
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            id: 'mapbox.streets'
+        }).addTo(mymap);
+
+        L.marker([39.90960456049752, 116.3972282409668]).addTo(mymap)
+            .bindPopup(mapObject.title).openPopup();
+
+        // L.circle([51.508, -0.11], 500, {
+        //  color: 'red',
+        //  fillColor: '#f03',
+        //  fillOpacity: 0.5
+        // }).addTo(mymap).bindPopup("I am a circle.");
+
+        // L.polygon([
+        //  [51.509, -0.08],
+        //  [51.503, -0.06],
+        //  [51.51, -0.047]
+        // ]).addTo(mymap).bindPopup("I am a polygon.");
+
+
+        var popup = L.popup();
+
+        function onMapClick(e) {
+            popup
+                .setLatLng(e.latlng)
+                .setContent("You clicked the map at " + e.latlng.toString())
+                .openOn(mymap);
+        }
+
+        mymap.on('click', onMapClick);
+    }
+    </script>
+</body>
+
+</html>

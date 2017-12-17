@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>基本地图</title>
+    <script language="javascript" src=http://api.51ditu.com/js/maps.js></script>
+    <script language="javascript">
+    var map;
+    var moveLsitener;
+    
+    //定义在双击的时候执行的函数 
+    function onDblClick() {
+        moveLsitener = LTEvent.addListener(map, "moveend", onMoveEnd);
+        //因为系统默认双击的时候会将地图定位到中心，因此，只需要定义地图在定位到中心完成之后放大地图即可 
+    }
+
+    //定义地图在定位到中心完成之后执行的函数 
+    function onMoveEnd(){
+        LTEvent.removeListener(moveLsitener); //删除事件注册 
+        map.zoomOut(); //放大地图 
+    }
+
+    function onLoad(){
+        var map;
+        map = new LTMaps("mapDiv");
+        map.centerAndZoom("beijing", 5); //将地图定位到北京,改动"beijing"可以将地图定位到其他城市 
+        map.handleKeyboard(); //启用键盘 
+        var control = new LTStandMapControl();
+        map.addControl(control); //添加到地图 
+        LTEvent.bind(map, "dblclick", map, function() { this.zoomOut() }); //绑定事件，在双击的时候先执行放大操作 
+    }
+    </script>
+    <style type="text/css">
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    </style>
+</head>
+
+<body onLoad="onLoad()">
+    <div id="mapDiv" style="position:absolute;width:100%; height:100%;">
+        <div align="center" style="margin:12px;">
+            <a href="http://api.51ditu.com/docs/mapsapi/help.html" target="_blank" style="color:#D01E14;font-weight:bolder;font-size:12px;">看不到地图请点这里</a>
+        </div>
+    </div>
+</body>
+
+</html>
