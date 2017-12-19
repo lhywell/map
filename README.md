@@ -39,6 +39,7 @@
 	- [坐标系说明](https://github.com/lhywell/map/blob/master/3.0README.md)
 	- [web端地图坐标系转换（涉及到百度，高德，WGS84，GCJ02）](https://github.com/lhywell/map/blob/master/3.1README.md)
 	- [经纬度前后转换](https://github.com/lhywell/map/blob/master/3.2README.md)
+	- [工具集](https://github.com/lhywell/map/blob/master/3.3README.md)
 
 
 
