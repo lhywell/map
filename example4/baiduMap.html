@@ -17,8 +17,8 @@
         height: 100%;
     }
     </style>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=G7HyWLnU8jtfIeIgF1QFSfGCxnuXNQrs"></script>
-    <script src="http://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=G7HyWLnU8jtfIeIgF1QFSfGCxnuXNQrs"></script>
+    <script src="https://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
 </head>
 
 <body>
@@ -33,11 +33,12 @@ map.addEventListener("click", mapClick);
 
 function init() {
     $.ajax({
-        url: "http://www.wulihub.com.cn/go/JPVkkW/fence_open.json",
+        url: "https://raw.githubusercontent.com/lhywell/map/master/example4/fence_open.json",
         context: document.body,
         success: function(response) {
-            // console.log(response)
-            var data = response.data.storeList;
+            console.log(typeof response,JSON.parse(response))
+            let res = JSON.parse(response);
+            var data = res.data.storeList;
             for (var i = 0; i < data.length; i++) {
                 var item = data[i];
                 if (item.type === 1) {
@@ -85,7 +86,7 @@ function drawMarker(point, type) {
             opts.icon = new BMap.Icon($static + "/dot_blue.png", new BMap.Size(12, 12));
             break;
         case 2:
-            opts.icon = new BMap.Icon($static + "/choose stores.png", new BMap.Size(24, 24));
+            opts.icon = new BMap.Icon($static + "/choose_stores.png", new BMap.Size(24, 24));
             break;
         case 3:
             opts.icon = new BMap.Icon($static + "/dot_zi.png", new BMap.Size(12, 12));

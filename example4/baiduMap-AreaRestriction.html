@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>baiduMap-区域限制</title>
+    <style type="text/css">
+    body,
+    html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
+
+    #allmap {
+        width: 100%;
+        height: 100%;
+    }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=G7HyWLnU8jtfIeIgF1QFSfGCxnuXNQrs"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/library/AreaRestriction/1.2/src/AreaRestriction_min.js"></script>
+    <script src="http://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+</head>
+
+<body>
+    <div id="allmap"></div>
+</body>
+<script>
+var map = new BMap.Map("allmap")
+//地图中心点深圳
+map.centerAndZoom(new BMap.Point(114.16248337214269, 22.559515429553684), 12);
+
+
+var cityList = [{
+    "qid": 110000,
+    "name": "北京市",
+    "province": "北京市",
+    "pinyin": "BJS",
+    "center": "116.407395,39.904211",
+    "bsne": "116.867477,40.079965",
+    "bssw": "115.947612,39.728386",
+    "telno": "010",
+    "active": false
+}, {
+    "qid": 310000,
+    "name": "上海市",
+    "province": "上海市",
+    "pinyin": "SHS",
+    "center": "121.473701,31.230416",
+    "bsne": "121.933633,31.426166",
+    "bssw": "121.013768,31.033887",
+    "telno": "021",
+    "active": false
+}, {
+    "qid": 440300,
+    "name": "深圳市",
+    "province": "广东省",
+    "pinyin": "SCS",
+    "center": "114.083161,22.647201",
+    "bsne": "114.543093,22.750159",
+    "bssw": "113.623229, 22.544165",
+    "telno": "0755",
+    "active": true
+}];
+
+function AreaRestriction(map) {
+    //锁定城市，不可以移动到所选城市之外的区域
+    var bssw = cityList[2].bssw.split(',');
+    var lng_sw = bssw[0];
+    var lat_sw = bssw[1];
+
+    var bsne = cityList[2].bsne.split(',');
+    var lng_ne = bsne[0];
+    var lat_ne = bsne[1];
+
+    var b = new BMap.Bounds(new BMap.Point(lng_sw, lat_sw), new BMap.Point(lng_ne, lat_ne));
+
+    try {
+        BMapLib.AreaRestriction.clearBounds()
+        BMapLib.AreaRestriction.setBounds(map, b);
+    } catch (e) {
+
+    }
+}
+AreaRestriction(map);
+</script>
+
+</html>

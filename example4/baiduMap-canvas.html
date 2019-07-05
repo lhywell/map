@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>baiduMap-用canvas渲染万级POI点</title>
+    <style type="text/css">
+    body,
+    html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
+
+    #allmap {
+        width: 100%;
+        height: 100%;
+    }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=G7HyWLnU8jtfIeIgF1QFSfGCxnuXNQrs"></script>
+    <script type="text/javascript" src="https://smartdata.b0.upaiyun.com/thinkmark/inmap.min.js"></script>
+    <script type="text/javascript" src="area.js"></script>
+</head>
+
+<body>
+    <div id="allmap"></div>
+</body>
+<script>
+var inmap = new inMap.Map({
+    id: 'allmap',
+    skin: "",
+    center: [114.16248337214269, 22.559515429553684],
+    zoom: {
+        value: 12, //当前地图级别
+        show: true, //放大缩小按钮显示
+        max: 18,
+        min: 11
+    },
+})
+var map = inmap.getMap();
+
+/*
+ * 配置文件
+ */
+var circle_blue = {
+    fillColor: 'rgba(129, 186, 246, 0.10)',
+    strokeColor: "rgba(45, 140, 240, 0.60)",
+    strokeWeight: 1,
+}
+
+/*
+ * 散点半径500米圆对应的像素半径
+ * Math.pow(2, (18 - zoom)); //把地图级别带进去，就能得出各个级别下1px对应多少米。
+ */
+function dotPixels(zoom) {
+    return 500 / Math.pow(2, (18 - zoom));
+}
+
+function getStyle(type) {
+    var backgroundColor, borderColor;
+    backgroundColor = circle_blue.fillColor;
+    borderColor = circle_blue.strokeColor;
+    return {
+        backgroundColor: backgroundColor,
+        borderColor: borderColor
+    }
+}
+
+/*
+ * 创建自定义图标-经纬度坐标marker
+ */
+function createImgOverlay(type) {
+    var icon = 'https://smartdata.b0.upaiyun.com/thinkmark/dot_mine.png'
+    //初始化tooltip开关
+    var overlay = new inMap.ImgOverlay({
+        tooltip: {
+            show: false
+        },
+        style: {
+            normal: {
+                icon: icon,
+                width: 24,
+                height: 24,
+                offsets: {
+                    top: "-90%",
+                    left: "-40%",
+                }
+            },
+        },
+        event: {
+            onState(state) {}
+        }
+    });
+
+    inmap.add(overlay);
+    return overlay;
+}
+
+/*
+ * 创建散点-marker的圆
+ */
+function createDotOverlay() {
+    var zoom = map.getZoom();
+    var pixels = dotPixels(zoom);
+
+    var obj = getStyle();
+    var overlay = new inMap.DotOverlay({
+        tooltip: {
+            show: false
+        },
+        style: {
+            normal: {
+                backgroundColor: obj.backgroundColor,
+                borderColor: obj.borderColor,
+                borderWidth: 1,
+                size: pixels
+            }
+        },
+        event: {
+            onState(state) {}
+        }
+    });
+    //去掉点击事件
+    overlay.tMouseClick = null;
+
+    inmap.add(overlay);
+
+    return overlay;
+}
+
+/*
+ * 监听放大缩小画圆
+ */
+function dotZoom(dotOverlay) {
+    var obj = this.getStyle(dotOverlay.type)
+
+    map.addEventListener('zoomend', e => {
+        var zoom = e.target.Oa;
+
+        var pixels = dotPixels(zoom);
+
+        dotOverlay.setOptionStyle({
+            style: {
+                normal: {
+                    backgroundColor: obj.backgroundColor,
+                    borderColor: obj.borderColor,
+                    borderWidth: 1,
+                    size: pixels
+                }
+            },
+        });
+    });
+}
+
+
+var data = storeList;
+var dotOverlay = createDotOverlay();
+dotOverlay.setPoints(data);
+dotZoom(dotOverlay);
+dotOverlay.setZIndex(2);
+
+var imgOverlay = this.createImgOverlay();
+imgOverlay.setPoints(data);
+imgOverlay.setZIndex(1);
+</script>
+
+</html>
