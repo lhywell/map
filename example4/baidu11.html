@@ -1,0 +1,105 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>GeoUtils示例</title>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=G7HyWLnU8jtfIeIgF1QFSfGCxnuXNQrs"></script>
+    <!-- <script type="text/javascript" src="https://api.map.baidu.com/api?v=1.2"></script> -->
+    <script type="text/javascript" src="http://api.map.baidu.com/library/GeoUtils/1.2/src/GeoUtils.js"></script>
+    <style type="text/css">
+    table {
+        font-size: 14px;
+    }
+    </style>
+</head>
+
+<body>
+    <div style="float:left;width:600px;height:500px;border:1px solid gray" id="container"></div>
+    <div style="float:left;width:300px;height:500px;border:1px solid gray" id="control">
+        <table style="width:100%;">
+            <tr>
+                <td>
+                    <input type="button" value="点在多边形内" onclick="ptInPolygon()" />
+                </td>
+                <td>
+                    <input type="button" value="点在多边形外" onclick="ptOutPolygon()" />
+                </td>
+            </tr>
+            <table>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+var map = new BMap.Map("container");
+var pt = new BMap.Point(114.083161, 22.647201);
+map.centerAndZoom(pt, 12);
+
+map.enableScrollWheelZoom(); //开启滚动缩放
+map.enableContinuousZoom(); //开启缩放平滑
+
+var drawOption_office = {
+    fillColor: '',
+    fillOpacity: 0,
+    strokeStyle: 'dashed',
+    strokeColor: "#261AE4",
+    strokeWeight: 2,
+    enableClicking: true
+}
+
+function drawOfficePolygon(path) {
+    let opts = {};
+    opts.fillColor = drawOption_office.fillColor;
+    opts.fillOpacity = drawOption_office.fillOpacity;
+    opts.strokeStyle = drawOption_office.strokeStyle;
+    opts.strokeColor = drawOption_office.strokeColor;
+    opts.strokeWeight = drawOption_office.strokeWeight;
+    opts.enableClicking = drawOption_office.enableClicking;
+
+    return new BMap.Polygon(path, opts);
+}
+
+function ptOutPolygon() {
+    var pts = [];
+    // var pt1 = new BMap.Point(120.9375, 31.0254);
+    // var pt2 = new BMap.Point(121.2012, 31.4648);
+    // var pt3 = new BMap.Point(121.377, 31.5088);
+    // var pt4 = new BMap.Point(121.1133, 31.7285);
+    // var pt5 = new BMap.Point(121.2012, 31.8604);    
+
+    pts.push(new BMap.Point(120.9375, 31.0254));
+    pts.push(new BMap.Point(121.2012, 31.4648));
+    pts.push(new BMap.Point(121.377, 31.5088));
+    pts.push(new BMap.Point(121.1133, 31.7285));
+    pts.push(new BMap.Point(121.2012, 31.8604));
+    pts.push(new BMap.Point(121.9922, 31.5967));
+    pts.push(new BMap.Point(121.9043, 31.1572));
+    pts.push(new BMap.Point(121.9922, 30.8057));
+    pts.push(new BMap.Point(121.2891, 30.6738));
+    pts.push(new BMap.Point(120.9375, 31.0254));
+    var overlay = new BMap.Polygon(pts);
+    // var path = [{ "lng": 120.9375, "lat": 31.0254 }, { "lng": 121.2012, "lat": 31.4648 }, { "lng": 121.377, "lat": 31.5088 }, { "lng": 121.1133, "lat": 31.7285 }, { "lng": 121.2012, "lat": 31.8604 }, { "lng": 121.9922, "lat": 31.5967 }, { "lng": 121.9043, "lat": 31.1572 }, { "lng": 121.9922, "lat": 30.8057 }, { "lng": 121.2891, "lat": 30.6738 }];
+    // var overlay = drawOfficePolygon(path);
+    console.log(overlay)
+    var bounds = overlay.getBounds();
+    var sw = bounds.getSouthWest()
+    var ne = bounds.getNorthEast()
+    console.log(sw, ne)
+    var pt = new BMap.Point(114.006122, 22.555914);
+
+    var result = BMapLib.GeoUtils.isPointInPolygon(pt, overlay);
+    if (result == true) {
+        alert("点在多边形内");
+    } else {
+        alert("点在多边形外")
+    }
+    var sw = { lat: 22.539436, lng: 114.104631 }
+    var ne = { lat: 22.539436, lng: 114.104631 }
+
+    //演示：将面添加到地图上    
+    map.clearOverlays();
+    var mkr = new BMap.Marker(pt);
+    map.addOverlay(mkr);
+    map.addOverlay(overlay);
+}
+</script>

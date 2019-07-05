@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>经纬度查询</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AB9553082c8a1107eac8bf4d30d8fd53"></script>
+    <script src="http://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+    <style type="text/css">
+    body,
+    html,
+    #allmap {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    </style>
+</head>
+
+<body>
+    <div id="allmap"></div>
+    <div style="position: absolute;top: 0;">
+        <div>
+            <input type="" name="" placeholder="经度" id="lng" />
+        </div>
+        <div>
+            <input type="" name="" placeholder="纬度" id="lat" />
+        </div>
+        <button id="add">添加</button>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+// 百度地图API功能
+var map = new BMap.Map("allmap");
+map.centerAndZoom(new BMap.Point(114.057865, 22.543096), 14);
+
+//添加地图类型控件
+map.addControl(new BMap.MapTypeControl({
+    mapTypes: [
+        BMAP_NORMAL_MAP,
+        BMAP_HYBRID_MAP
+    ]
+}));
+map.setCurrentCity("北京"); // 设置地图显示的城市 此项是必须设置的
+map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+
+
+$('#add').click(function() {
+    var lng = $('#lng').val();
+    var lat = $('#lat').val();
+    console.log(lng)
+    var point = drawLngLat(lng, lat);
+    //画中心点标记
+    var marker = drawMarker(point, 2);
+
+    map.setCenter(point);
+    map.addOverlay(marker);
+})
+
+function drawLngLat(lng, lat) {
+    return new BMap.Point(lng, lat);
+}
+
+function drawMarker(point, type) {
+    let opts = {};
+    var $static = 'http://smartdata.b0.upaiyun.com/thinkmark';
+    let icon = new BMap.Icon($static + "/red.png", new BMap.Size(27, 27))
+    icon.setImageSize(new BMap.Size(27, 27));
+    opts.icon = icon;
+    return new BMap.Marker(point, opts);
+}
+</script>

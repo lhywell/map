@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>baiduMap-Edge浏览器点击偏移</title>
+    <style type="text/css">
+    body,
+    html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
+
+    #allmap {
+        width: 100%;
+        height: 100%;
+    }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=G7HyWLnU8jtfIeIgF1QFSfGCxnuXNQrs"></script>
+    <script src="http://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+</head>
+
+<body>
+    <div id="allmap"></div>
+</body>
+<script>
+//访问：http://smartdata.b0.upaiyun.com/thinkmark/baiduMap.html
+var map = new BMap.Map("allmap")
+map.centerAndZoom(new BMap.Point(114.16248337214269, 22.559515429553684), 12); // 
+
+map.addEventListener("click", mapClick);
+
+function init() {
+    $.ajax({
+        url: "http://smartdata.b0.upaiyun.com/thinkmark/fence_open.json",
+        context: document.body,
+        success: function(response) {
+            // console.log(response)
+            var data = response.data.storeList;
+            for (var i = 0; i < data.length; i++) {
+                var item = data[i];
+                if (item.type === 1) {
+                    var radius = item.content.radius;
+                    var center = item.center;
+                    var point = drawLngLat(parseFloat(center[1]), parseFloat(center[0]));
+
+                    var marker = drawMarker(point, 2);
+
+                    map.addOverlay(marker);
+
+                    /***画圆-加上就偏移****/
+                    var path = new BMap.Circle(point, 500);
+                    path.hide();
+                    map.addOverlay(path);
+                    /***画圆-加上就偏移****/
+                }
+            }
+
+        }
+    });
+}
+init();
+
+function mapClick(e) {
+    // console.log(e)
+    var lng = e.point.lng,
+        lat = e.point.lat;
+
+    var point = drawLngLat(lng, lat);
+    //画中心点标记
+    var marker = drawMarker(point, 2);
+    map.addOverlay(marker,false);
+}
+
+function drawLngLat(lng, lat) {
+    return new BMap.Point(lng, lat);
+}
+
+function drawMarker(point, type) {
+    let opts = {};
+    var $static = 'http://smartdata.b0.upaiyun.com/thinkmark';
+    switch (type) {
+        case 1:
+            opts.icon = new BMap.Icon($static + "/dot_blue.png", new BMap.Size(12, 12));
+            break;
+        case 2:
+            opts.icon = new BMap.Icon($static + "/choose stores.png", new BMap.Size(24, 24));
+            break;
+        case 3:
+            opts.icon = new BMap.Icon($static + "/dot_zi.png", new BMap.Size(12, 12));
+            break;
+        case 4:
+            opts.icon = new BMap.Icon($static + "/dot_yellow.png", new BMap.Size(12, 12));
+            break;
+
+    }
+    opts.offset = new BMap.Size(0, 0);
+
+    return new BMap.Marker(point, opts);
+}
+
+var drawOption = {
+    fillColor: '#FF0000',
+    fillOpacity: 0.1,
+    strokeStyle: 'solid',
+    strokeColor: "#FF0000",
+    strokeWeight: 1,
+    enableClicking: true
+};
+
+function drawCircle(point, radius) {
+    var opts = {};
+
+    opts.fillColor = drawOption.fillColor;
+    opts.fillOpacity = drawOption.fillOpacity;
+    opts.strokeStyle = drawOption.strokeStyle;
+    opts.strokeColor = drawOption.strokeColor;
+    opts.strokeWeight = drawOption.strokeWeight;
+    // opts.enableClicking = drawOption.enableClicking;
+
+    return new BMap.Circle(point, radius, opts);
+}
+</script>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AB9553082c8a1107eac8bf4d30d8fd53"></script>
+    <title>带文字标签的覆盖物</title>
+</head>
+<body>
+    <div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");
+    var point = new BMap.Point(116.400244,39.92556);
+    map.centerAndZoom(point, 12);
+    map.addEventListener('mousemove', mapOver);
+    var marker = new BMap.Marker(point);  // 创建标注
+                 // 将标注添加到地图中
+
+    var label = new BMap.Label("我是文字标注哦",{offset:new BMap.Size(20,-10)});
+    
+    marker.addEventListener("mouseover", elementHover);
+    marker.addEventListener("mouseout", elementOut);
+    map.addOverlay(marker); 
+    function mapOver(e){
+        console.log(e)
+    }
+    function elementHover(e){
+        marker.setLabel(label);
+    }
+    function elementOut(e){
+        console.log(marker.getLabel());
+        let label = marker.getLabel()
+        map.removeOverlay(label);
+    }
+</script>

@@ -1,0 +1,52 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+    body,
+    html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: "微软雅黑";
+        font-size: 14px;
+    }
+    #allmap {
+        width: 100%;
+        height: 500px;
+    }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AB9553082c8a1107eac8bf4d30d8fd53"></script>
+    <title>逆地址解析</title>
+</head>
+
+<body>
+    <div id="allmap"></div>
+    <p>点击地图展示详细地址</p>
+</body>
+
+</html>
+<script type="text/javascript">
+// 百度地图API功能
+var map = new BMap.Map("allmap");
+var point = new BMap.Point(113.850525, 22.558945);
+map.centerAndZoom(point, 16);
+var geoc = new BMap.Geocoder();
+// let pt = { lng: 116.346633, lat: 39.880172 };
+// geoc.getLocation(pt, function(rs) {
+//     var addComp = rs.addressComponents;
+//     alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+// });
+
+map.addEventListener("click", function(e) {
+    var pt = e.point;
+    // var pt = { lng: 113.9396515546, lat: 22.5227947425 };
+    console.log(pt)
+    geoc.getLocation(pt, function(rs) {
+        console.log(rs)
+        var addComp = rs.addressComponents;
+        alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+    });
+});
+</script>

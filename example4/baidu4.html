@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+    body,
+    html,
+    #allmap {
+        width: 100%;
+        height: 500px;
+        overflow: hidden;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    </style>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AB9553082c8a1107eac8bf4d30d8fd53"></script>
+    <title>事件监听，注销事件监听</title>
+</head>
+
+<body>
+    <div id="allmap"></div>
+    <div style="position: absolute;">
+        <button id="open" onclick="addClick()">增加地图点击事件</button>
+        <button id="open" onclick="addClick1()">增加地图点击事件</button>
+        <button id="close" onclick="removeClick()">注销地图点击事</button>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+// 百度地图API功能
+var map = new BMap.Map("allmap"); // 创建Map实例
+map.centerAndZoom(new BMap.Point(116.404, 39.915), 11); // 初始化地图,设置中心点坐标和地图级别
+// console.log(map.getCopyright())
+var tileLayer = new BMap.TileLayer();
+tileLayer.getTilesUrl = function(tileCoord, zoom) {
+    var x = tileCoord.x;
+    var y = tileCoord.y;
+    var url = 'images/tiles/' + zoom + '/tile' + x + '_' + y + '.png';
+    console.log(url)
+    return url;
+}
+// console.log(ab.getTilesUrl())
+// console.log(ab.getCopyright())
+//添加地图类型控件
+map.addControl(new BMap.MapTypeControl({
+    mapTypes: [
+        BMAP_NORMAL_MAP,
+        BMAP_HYBRID_MAP
+    ]
+}));
+map.setCurrentCity("北京"); // 设置地图显示的城市 此项是必须设置的
+map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+
+// 同时点击按钮1，按钮2会弹出两个对话框
+function showInfo(e) {
+    alert("按钮1， " + e.point.lng + e.point.lat);
+}
+
+function showInfo1(e) {
+    alert("按钮2， " + e.point.lng + e.point.lat);
+}
+
+function addClick() {
+    map.removeEventListener("click", showInfo);
+    map.removeEventListener("click", showInfo1);
+    map.addEventListener("click", showInfo);
+}
+
+function addClick1() {
+    map.removeEventListener("click", showInfo);
+    map.removeEventListener("click", showInfo1);
+    map.addEventListener("click", showInfo1);
+}
+
+function removeClick() {
+    map.removeEventListener("click", showInfo);
+    map.removeEventListener("click", showInfo1);
+}
+</script>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		body, html {width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+		#allmap{width:100%;height:500px;}
+		p{margin-left:5px; font-size:14px;}
+    .loading {
+    margin: 100px auto;
+    width: 8em;
+    height: 8em;
+    position: relative;
+}
+ 
+.loading .progress {
+    position: absolute;
+    width: 6em;
+    height: 6em;
+    background-color: white;
+    border-radius: 50%;
+    left: 1em;
+    top: 1em;
+    line-height: 6em;
+    text-align: center;
+}
+ 
+.left,
+.right {
+    width: 4em;
+    height: 8em;
+    overflow: hidden;
+    position: relative;
+    float: left;
+    background-color: #999999
+}
+ 
+.left {
+    border-radius: 8em 0 0 8em;
+}
+ 
+.right {
+    border-radius: 0 8em 8em 0;
+}
+ 
+.left:after,
+.right:after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 4em;
+    height: 8em;
+    background-color: white;
+    border-radius: 8em 0 0 8em;
+    background-color: red;
+}
+ 
+.right:after {
+    content: "";
+    position: absolute;
+    display: block;
+    border-radius: 0 8em 8em 0;
+}
+.left:after {
+    transform-origin: right center;
+}
+ 
+.right:after {
+    transform-origin: left center;
+    transform: rotateZ(45deg);
+}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=A4749739227af1618f7b0d1b588c0e85"></script>
+	<title>添加自定义覆盖物</title>
+</head>
+<body>
+	<div id="allmap"></div>
+  
+ 
+<div class="loading">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="progress">85%</div>
+</div>
+	<p>图示中为房产覆盖物，鼠标移到覆盖物上，自动显示房屋套数</p>
+</body>
+</html>
+<script type="text/javascript">
+	// 百度地图API功能
+	var mp = new BMap.Map("allmap");
+	mp.centerAndZoom(new BMap.Point(116.3964,39.9093), 15);
+	mp.enableScrollWheelZoom();
+	// 复杂的自定义覆盖物
+    function ComplexCustomOverlay(point, text, mouseoverText){
+      this._point = point;
+      this._text = text;
+      this._overText = mouseoverText;
+    }
+    ComplexCustomOverlay.prototype = new BMap.Overlay();
+    ComplexCustomOverlay.prototype.initialize = function(map){
+      this._map = map;
+      var div = this._div = document.createElement("div");
+      div.style.position = "absolute";
+      div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+      div.style.backgroundColor = "#EE5D5B";
+      div.style.border = "1px solid #BC3B3A";
+      div.style.color = "white";
+      div.style.height = "18px";
+      div.style.padding = "2px";
+      div.style.lineHeight = "18px";
+      div.style.whiteSpace = "nowrap";
+      div.style.MozUserSelect = "none";
+      div.style.fontSize = "12px"
+      var span = this._span = document.createElement("span");
+      div.appendChild(span);
+      span.appendChild(document.createTextNode(this._text));      
+      var that = this;
+
+      var arrow = this._arrow = document.createElement("div");
+      arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
+      arrow.style.position = "absolute";
+      arrow.style.width = "11px";
+      arrow.style.height = "10px";
+      arrow.style.top = "22px";
+      arrow.style.left = "10px";
+      arrow.style.overflow = "hidden";
+      div.appendChild(arrow);
+     
+      div.onmouseover = function(){
+        this.style.backgroundColor = "#6BADCA";
+        this.style.borderColor = "#0000ff";
+        this.getElementsByTagName("span")[0].innerHTML = that._overText;
+        arrow.style.backgroundPosition = "0px -20px";
+      }
+
+      div.onmouseout = function(){
+        this.style.backgroundColor = "#EE5D5B";
+        this.style.borderColor = "#BC3B3A";
+        this.getElementsByTagName("span")[0].innerHTML = that._text;
+        arrow.style.backgroundPosition = "0px 0px";
+      }
+
+      mp.getPanes().labelPane.appendChild(div);
+      
+      return div;
+    }
+    ComplexCustomOverlay.prototype.draw = function(){
+      var map = this._map;
+      var pixel = map.pointToOverlayPixel(this._point);
+      this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+      this._div.style.top  = pixel.y - 30 + "px";
+    }
+    var txt = "银湖海岸城", mouseoverTxt = txt + " " + parseInt(Math.random() * 1000,10) + "套" ;
+        
+    var myCompOverlay = new ComplexCustomOverlay(new BMap.Point(116.407845,39.914101), "银湖海岸城",mouseoverTxt);
+
+    mp.addOverlay(myCompOverlay);
+
+</script>

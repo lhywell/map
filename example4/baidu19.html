@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>南昌行政区查询</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AB9553082c8a1107eac8bf4d30d8fd53"></script>
+    <script src="http://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="http://smartdata.b0.upaiyun.com/map/DrawingManager.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <style type="text/css">
+    body,
+    html,
+    #allmap {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    </style>
+</head>
+
+<body>
+    <div id="allmap"></div>
+</body>
+
+</html>
+<script type="text/javascript">
+// 百度地图API功能
+var map = new BMap.Map("allmap");
+ 
+map.centerAndZoom(new BMap.Point(115.859,28.691), 12);
+
+//添加地图类型控件
+map.addControl(new BMap.MapTypeControl({
+    mapTypes: [
+        BMAP_NORMAL_MAP,
+        BMAP_HYBRID_MAP
+    ]
+}));
+// map.setCurrentCity("天津"); // 设置地图显示的城市 此项是必须设置的
+map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+
+map.addEventListener('click', (e)=>{
+    console.log(e)
+})
+function drawLngLat(lng, lat) {
+    return new BMap.Point(lng, lat);
+}
+
+
+const drawOption_office = {
+    fillColor: '#cccccc',
+    fillOpacity: 0,
+    strokeStyle: 'dashed',
+    strokeColor: "#261AE4",
+    strokeWeight: 2,
+    enableClicking: true
+}
+
+function drawOfficePolygon(path) {
+    let opts = {};
+    opts.fillColor = drawOption_office.fillColor;
+    opts.fillOpacity = drawOption_office.fillOpacity;
+    opts.strokeStyle = drawOption_office.strokeStyle;
+    opts.strokeColor = drawOption_office.strokeColor;
+    opts.strokeWeight = drawOption_office.strokeWeight;
+    opts.enableClicking = drawOption_office.enableClicking;
+
+    return new BMap.Polygon(path, opts);
+}
+var polygon = {"code":200,"msg":"success.","data":[{"id":582,"city":"南昌市","name":"青山湖区","polygons":[[{"lat":28.695,"lng":115.936},{"lat":28.701,"lng":115.931},{"lat":28.707,"lng":115.936},{"lat":28.714,"lng":115.938},{"lat":28.72,"lng":115.937},{"lat":28.725,"lng":115.941},{"lat":28.729,"lng":115.944},{"lat":28.735,"lng":115.953},{"lat":28.738,"lng":115.96},{"lat":28.74,"lng":115.966},{"lat":28.74,"lng":115.975},{"lat":28.739,"lng":115.981},{"lat":28.736,"lng":115.988},{"lat":28.731,"lng":116.004},{"lat":28.731,"lng":116.009},{"lat":28.726,"lng":116.013},{"lat":28.719,"lng":116.012},{"lat":28.708,"lng":116.005},{"lat":28.699,"lng":115.998},{"lat":28.69,"lng":115.994},{"lat":28.682,"lng":115.991},{"lat":28.676,"lng":115.99},{"lat":28.669,"lng":115.99},{"lat":28.669,"lng":115.996},{"lat":28.67,"lng":116.001},{"lat":28.668,"lng":116.007},{"lat":28.666,"lng":116.012},{"lat":28.658,"lng":116.016},{"lat":28.653,"lng":116.021},{"lat":28.648,"lng":116.025},{"lat":28.646,"lng":116.031},{"lat":28.647,"lng":116.036},{"lat":28.649,"lng":116.04},{"lat":28.654,"lng":116.043},{"lat":28.661,"lng":116.051},{"lat":28.653,"lng":116.05},{"lat":28.641,"lng":116.052},{"lat":28.637,"lng":116.058},{"lat":28.631,"lng":116.06},{"lat":28.622,"lng":116.057},{"lat":28.616,"lng":116.052},{"lat":28.613,"lng":116.047},{"lat":28.605,"lng":116.046},{"lat":28.603,"lng":116.037},{"lat":28.596,"lng":116.026},{"lat":28.588,"lng":116.016},{"lat":28.592,"lng":116.006},{"lat":28.593,"lng":116.001},{"lat":28.595,"lng":115.997},{"lat":28.591,"lng":115.988},{"lat":28.594,"lng":115.981},{"lat":28.596,"lng":115.972},{"lat":28.599,"lng":115.966},{"lat":28.6,"lng":115.96},{"lat":28.597,"lng":115.953},{"lat":28.596,"lng":115.946},{"lat":28.608,"lng":115.948},{"lat":28.617,"lng":115.95},{"lat":28.62,"lng":115.962},{"lat":28.64,"lng":115.963},{"lat":28.647,"lng":115.958},{"lat":28.653,"lng":115.956},{"lat":28.66,"lng":115.936},{"lat":28.66,"lng":115.925},{"lat":28.68,"lng":115.925},{"lat":28.68,"lng":115.933},{"lat":28.693,"lng":115.933},{"lat":28.695,"lng":115.936}],[{"lat":28.699,"lng":115.882},{"lat":28.702,"lng":115.873},{"lat":28.695,"lng":115.862},{"lat":28.691,"lng":115.858},{"lat":28.694,"lng":115.852},{"lat":28.691,"lng":115.846},{"lat":28.696,"lng":115.847},{"lat":28.703,"lng":115.845},{"lat":28.706,"lng":115.839},{"lat":28.71,"lng":115.836},{"lat":28.714,"lng":115.825},{"lat":28.71,"lng":115.822},{"lat":28.715,"lng":115.812},{"lat":28.72,"lng":115.812},{"lat":28.727,"lng":115.806},{"lat":28.731,"lng":115.799},{"lat":28.736,"lng":115.796},{"lat":28.741,"lng":115.797},{"lat":28.745,"lng":115.794},{"lat":28.758,"lng":115.797},{"lat":28.761,"lng":115.793},{"lat":28.759,"lng":115.806},{"lat":28.757,"lng":115.816},{"lat":28.763,"lng":115.819},{"lat":28.771,"lng":115.819},{"lat":28.778,"lng":115.819},{"lat":28.782,"lng":115.821},{"lat":28.786,"lng":115.823},{"lat":28.791,"lng":115.828},{"lat":28.796,"lng":115.823},{"lat":28.804,"lng":115.82},{"lat":28.806,"lng":115.829},{"lat":28.809,"lng":115.839},{"lat":28.805,"lng":115.846},{"lat":28.802,"lng":115.849},{"lat":28.799,"lng":115.86},{"lat":28.803,"lng":115.866},{"lat":28.802,"lng":115.875},{"lat":28.806,"lng":115.878},{"lat":28.811,"lng":115.875},{"lat":28.811,"lng":115.889},{"lat":28.815,"lng":115.896},{"lat":28.806,"lng":115.904},{"lat":28.799,"lng":115.908},{"lat":28.799,"lng":115.916},{"lat":28.794,"lng":115.915},{"lat":28.788,"lng":115.917},{"lat":28.787,"lng":115.927},{"lat":28.782,"lng":115.932},{"lat":28.774,"lng":115.93},{"lat":28.764,"lng":115.941},{"lat":28.757,"lng":115.936},{"lat":28.757,"lng":115.93},{"lat":28.756,"lng":115.924},{"lat":28.763,"lng":115.918},{"lat":28.768,"lng":115.916},{"lat":28.766,"lng":115.912},{"lat":28.761,"lng":115.908},{"lat":28.76,"lng":115.903},{"lat":28.75,"lng":115.896},{"lat":28.741,"lng":115.898},{"lat":28.731,"lng":115.9},{"lat":28.725,"lng":115.898},{"lat":28.718,"lng":115.895},{"lat":28.707,"lng":115.889},{"lat":28.702,"lng":115.886},{"lat":28.699,"lng":115.883},{"lat":28.699,"lng":115.882}]]}]}
+
+// let polygonArray = polygon.map.split('|');
+
+//用逗号分割，取出经纬度坐标
+polygon.data.map(m =>{
+    
+    for (let item of m.polygons) {
+        let path = [];
+        for (let x of item) {
+            let ary = drawLngLat(x.lng, x.lat)
+            path.push(ary)
+        }
+        let overlay = drawOfficePolygon(path);
+        console.log(overlay)
+        map.addOverlay(overlay);
+        overlay.show();
+    }    
+})
+
+var overlays = [];
+
+var styleOptions = {
+    strokeColor: "red", //边线颜色。
+    fillColor: "red", //填充颜色。当参数为空时，圆形将没有填充效果。
+    strokeWeight: 3, //边线的宽度，以像素为单位。
+    strokeOpacity: 0.8, //边线透明度，取值范围0 - 1。
+    fillOpacity: 0.6, //填充的透明度，取值范围0 - 1。
+    strokeStyle: 'solid' //边线的样式，solid或dashed。
+}
+
+function clearAll() {
+    for (var i = 0; i < overlays.length; i++) {
+        map.removeOverlay(overlays[i]);
+    }
+    overlays.length = 0
+}
+</script>

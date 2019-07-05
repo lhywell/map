@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <title>深圳行政区查询</title>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AB9553082c8a1107eac8bf4d30d8fd53"></script>
+    <script src="http://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="http://smartdata.b0.upaiyun.com/map/DrawingManager.js"></script>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+    <style type="text/css">
+    body,
+    html,
+    #allmap {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    </style>
+</head>
+
+<body>
+    <div id="allmap"></div>
+</body>
+
+</html>
+<script type="text/javascript">
+// 百度地图API功能
+var map = new BMap.Map("allmap");
+map.centerAndZoom(new BMap.Point(114.083161,22.647201), 12);
+
+//添加地图类型控件
+map.addControl(new BMap.MapTypeControl({
+    mapTypes: [
+        BMAP_NORMAL_MAP,
+        BMAP_HYBRID_MAP
+    ]
+}));
+map.setCurrentCity("北京"); // 设置地图显示的城市 此项是必须设置的
+map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+
+
+function drawLngLat(lng, lat) {
+    return new BMap.Point(lng, lat);
+}
+
+function drawMarker(point, type) {
+    let opts = {};
+    var $static = 'http://smartdata.b0.upaiyun.com/thinkmark';
+    let icon = new BMap.Icon($static + "/marker.png", new BMap.Size(27, 27))
+    icon.setImageSize(new BMap.Size(27, 27));
+    opts.icon = icon;
+    return new BMap.Marker(point, opts);
+}
+const drawOption_office = {
+    fillColor: '#cccccc',
+    fillOpacity: 0,
+    strokeStyle: 'dashed',
+    strokeColor: "#261AE4",
+    strokeWeight: 2,
+    enableClicking: true
+}
+
+function drawOfficePolygon(path) {
+    let opts = {};
+    opts.fillColor = drawOption_office.fillColor;
+    opts.fillOpacity = drawOption_office.fillOpacity;
+    opts.strokeStyle = drawOption_office.strokeStyle;
+    opts.strokeColor = drawOption_office.strokeColor;
+    opts.strokeWeight = drawOption_office.strokeWeight;
+    opts.enableClicking = drawOption_office.enableClicking;
+
+    return new BMap.Polygon(path, opts);
+}
+var polygon = "114.104631,22.539436;114.124753,22.530356;114.171896,22.560798;114.265608,22.580554;114.24836,22.596037;114.218465,22.614721;114.171896,22.64888;114.18052,22.656885;114.061513,22.686764;113.982174,22.689965;113.931582,22.664355;113.87754,22.656885;113.862592,22.63447;113.843045,22.680362;113.780954,22.680896;113.780954,22.665422;113.809125,22.616857;113.831546,22.592834;113.870066,22.527151;113.881564,22.485482;113.896512,22.44968;113.929282,22.482811;113.942505,22.481742;113.958603,22.491894;113.963202,22.516468;113.973551,22.523412;114.024143,22.530356;114.04599,22.518071;114.067837,22.513797;114.092558,22.531958;114.104631,22.539436";
+
+let polygonArray = polygon.split('|');
+//用逗号分割，取出经纬度坐标
+let path = [];
+for (let item of polygonArray) {
+    let array = item.split(';');
+    for (let x of array) {
+        let lnglat = x.split(',');
+        path.push({
+            "lng": lnglat[0],
+            "lat": lnglat[1]
+        })
+    }
+    let ary = path.map(item => drawLngLat(item.lng, item.lat))
+    console.log(ary)
+    let overlay = drawOfficePolygon(ary);
+    map.addOverlay(overlay);
+    overlay.show();
+}
+
+
+var overlays = [];
+
+var overlaycomplete = function(e) {
+    console.log(e.drawingMode, e.overlay, e.calculate, e.label)
+    overlays.push(e.overlay);
+    // map.removeOverlay(e.label)
+    let overlay = e.overlay;
+    let bounds = overlay.getBounds();
+    var sw = bounds.getSouthWest()
+    var ne = bounds.getNorthEast()
+    console.log(ne, sw)
+    var over = map.getOverlays();
+    for (var i = 0; i < over.length; i++) {
+        if (over[i] instanceof(BMap.Label)) {
+            console.log(over[i])
+        }
+    }
+};
+var styleOptions = {
+    strokeColor: "red", //边线颜色。
+    fillColor: "red", //填充颜色。当参数为空时，圆形将没有填充效果。
+    strokeWeight: 3, //边线的宽度，以像素为单位。
+    strokeOpacity: 0.8, //边线透明度，取值范围0 - 1。
+    fillOpacity: 0.6, //填充的透明度，取值范围0 - 1。
+    strokeStyle: 'solid' //边线的样式，solid或dashed。
+}
+//实例化鼠标绘制工具
+var drawingManager = new BMapLib.DrawingManager(map, {
+    isOpen: true, //是否开启绘制模式
+    enableDrawingTool: false, //是否显示工具栏
+    enableCalculate: true,
+    polygonOptions: styleOptions, //多边形的样式
+});
+
+//关闭地图的绘制状态
+// drawingManager.close();
+
+// drawingManager.enableCalculate();
+drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON);
+
+//添加鼠标绘制工具监听事件，用于获取绘制结果
+drawingManager.addEventListener('overlaycomplete', overlaycomplete);
+
+function clearAll() {
+    for (var i = 0; i < overlays.length; i++) {
+        map.removeOverlay(overlays[i]);
+    }
+    overlays.length = 0
+}
+</script>
