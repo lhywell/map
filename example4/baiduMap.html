@@ -36,7 +36,7 @@ function init() {
         url: "https://raw.githubusercontent.com/lhywell/map/master/example4/fence_open.json",
         context: document.body,
         success: function(response) {
-            console.log(typeof response,JSON.parse(response))
+            console.log(typeof response, JSON.parse(response))
             let res = JSON.parse(response);
             var data = res.data.storeList;
             for (var i = 0; i < data.length; i++) {
@@ -71,7 +71,7 @@ function mapClick(e) {
     var point = drawLngLat(lng, lat);
     //画中心点标记
     var marker = drawMarker(point, 2);
-    map.addOverlay(marker,false);
+    map.addOverlay(marker, false);
 }
 
 function drawLngLat(lng, lat) {
@@ -83,16 +83,17 @@ function drawMarker(point, type) {
     var $static = 'http://www.wulihub.com.cn/go/JPVkkW/';
     switch (type) {
         case 1:
-            opts.icon = new BMap.Icon($static + "/dot_blue.png", new BMap.Size(12, 12));
+            opts.icon = new BMap.Icon($static + "/dot_blue.png", new BMap.Size(24, 24));
             break;
         case 2:
-            opts.icon = new BMap.Icon($static + "/choose_stores.png", new BMap.Size(24, 24));
+            opts.icon = new BMap.Icon($static + "/choose-stores.png", new BMap.Size(27, 27));
+            opts.icon.setImageSize(new BMap.Size(27, 27));
             break;
         case 3:
-            opts.icon = new BMap.Icon($static + "/dot_zi.png", new BMap.Size(12, 12));
+            opts.icon = new BMap.Icon($static + "/dot_zi.png", new BMap.Size(24, 24));
             break;
         case 4:
-            opts.icon = new BMap.Icon($static + "/dot_yellow.png", new BMap.Size(12, 12));
+            opts.icon = new BMap.Icon($static + "/dot_yellow.png", new BMap.Size(24, 24));
             break;
 
     }

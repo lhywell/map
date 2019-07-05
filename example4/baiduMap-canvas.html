@@ -18,7 +18,7 @@
     }
     </style>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=G7HyWLnU8jtfIeIgF1QFSfGCxnuXNQrs"></script>
-    <script type="text/javascript" src="https://smartdata.b0.upaiyun.com/thinkmark/inmap.min.js"></script>
+    <script type="text/javascript" src="http://www.wulihub.com.cn/go/JPVkkW/inmap.min.js"></script>
     <script type="text/javascript" src="area.js"></script>
 </head>
 
@@ -70,7 +70,7 @@ function getStyle(type) {
  * 创建自定义图标-经纬度坐标marker
  */
 function createImgOverlay(type) {
-    var icon = 'https://smartdata.b0.upaiyun.com/thinkmark/dot_mine.png'
+    var icon = 'http://www.wulihub.com.cn/go/JPVkkW/dot_mine.png'
     //初始化tooltip开关
     var overlay = new inMap.ImgOverlay({
         tooltip: {
@@ -154,6 +154,7 @@ function dotZoom(dotOverlay) {
 
 
 var data = storeList;
+console.log(storeList.length,'个点')
 var dotOverlay = createDotOverlay();
 dotOverlay.setPoints(data);
 dotZoom(dotOverlay);
