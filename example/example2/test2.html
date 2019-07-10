@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" type="text/css" rel="stylesheet" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+    <!--  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+  integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+  crossorigin=""></script> -->
+    <style type="text/css">
+    body,
+    html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    #allmap {
+        width: 100%;
+        height: 500px;
+        overflow: hidden;
+    }
+    #result {
+        width: 100%;
+        font-size: 12px;
+    }
+    dl,
+    dt,
+    dd,
+    ul,
+    li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    p {
+        font-size: 12px;
+    }
+    dt {
+        font-size: 14px;
+        font-family: "微软雅黑";
+        font-weight: bold;
+        border-bottom: 1px dotted #000;
+        padding: 5px 0 5px 5px;
+        margin: 5px 0;
+    }
+    dd {
+        padding: 5px 0 0 5px;
+    }
+    li {
+        line-height: 28px;
+    }
+    #map {
+        height: 100%;
+    }
+    #switcher {
+        position: absolute;
+        height: 50px;
+        left: 10px;
+        bottom: 10px;
+    }
+    #switcher a {
+        margin: 0px 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="switcher">
+        <a href="#" class="osm" id="osm">OSM</a>
+        <a href="#" class="wms" id="wms">WMS</a>
+    </div>
+    <script>
+    map = L.map('map', {
+        center: [38.91237258911133, -76.93429470062256],
+        zoom: 15
+    });
+
+    osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'OSM'
+    });
+    osm.crs = L.CRS.EPSG3857;
+
+    wms = L.tileLayer.wms('http://worldmapkit1.thinkgeo.com/CachedWmsServer/WmsServer.axd', {
+        layers: 'WorldMapKitLayer',
+        styles: 'WorldMapKitDefaultStyles',
+        attribution: 'Map data &copy; <a href="http://www.thinkgeo.com">ThinkGeo</a>'
+    });
+    wms.crs = L.CRS.EPSG4326;
+
+    var mk = L.marker(map.getCenter()).addTo(map);
+    var mk2 = L.marker(new L.LatLng(38.9169152710651, -76.92350149154663)).addTo(map);
+
+
+
+    var osmTrigger = document.getElementById("osm");
+    osmTrigger.onclick = function() {
+        map.removeLayer(wms);
+        changeMapCRS(osm.crs);
+        map.addLayer(osm);
+        mk.update();
+        mk2.update();
+        return false;
+    }
+
+    var wmsTrigger = document.getElementById("wms");
+    wmsTrigger.onclick = function() {
+        map.removeLayer(osm);
+        changeMapCRS(wms.crs);
+        map.addLayer(wms);
+        mk.update();
+        mk2.update();
+        return false;
+    }
+    osmTrigger.onclick();
+
+    function changeMapCRS(crs) {
+        map.options.crs = crs;
+        map._initialTopLeftPoint = map._getNewTopLeftPoint(map.getCenter());
+    }
+    </script>
+</body>
+
+</html>

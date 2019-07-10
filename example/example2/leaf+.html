@@ -5,20 +5,30 @@
     <title>Quick Start - Leaflet</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
-    <script src="Proj4Leaflet/lib/proj4-compressed.js"></script>
+    <script src="Proj4Leaflet/lib/proj4.js"></script>
     <script src="Proj4Leaflet/src/proj4leaflet.js"></script>
 </head>
 
 <body>
-    <div id="mapid" style="width: 600px; height: 400px;"></div>
+    <div id="mapid" style="width: 1024px; height: 600px"></div>
+    <div>
+        
+    </div>
     <button id="button1">天地图</button>
     <button id="button2">高德地图</button>
     <button id="button3">百度地图</button>
     <script>
     console.log(L)
+
+    var mymap = L.map('mapid').setView([39.90960456049752, 116.3972282409668], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: ''
+    }).addTo(mymap);
+
+
     var mapObject = {}
     document.getElementById('button1').onclick = function() {
         console.log(1111)
@@ -91,7 +101,7 @@
     }
 
     function setUp(mapObject) {
-        var mymap = L.map('mapid').setView([39.90960456049752, 116.3972282409668], 13);
+
 
         L.tileLayer(mapObject.url, {
             maxZoom: 18,

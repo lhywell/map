@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" type="text/css" rel="stylesheet" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://public.ishowchina.com/js/jquery-1.11.3.min.js"></script>
+    <!--  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+  integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+  crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+  integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+  crossorigin=""></script> -->
+    <style type="text/css">
+    body,
+    html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    #allmap {
+        width: 100%;
+        height: 500px;
+        overflow: hidden;
+    }
+    #result {
+        width: 100%;
+        font-size: 12px;
+    }
+    dl,
+    dt,
+    dd,
+    ul,
+    li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    p {
+        font-size: 12px;
+    }
+    dt {
+        font-size: 14px;
+        font-family: "微软雅黑";
+        font-weight: bold;
+        border-bottom: 1px dotted #000;
+        padding: 5px 0 5px 5px;
+        margin: 5px 0;
+    }
+    dd {
+        padding: 5px 0 0 5px;
+    }
+    li {
+        line-height: 28px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <br> on start shown EPSG3857 base layer and EPSG3395 traffic layer
+    <br><br>
+    <button class="_gis_btn">set base layer: 2gis (EPSG3857)</button>
+    <br>
+    <br>
+    <button class="_yandex_btn">set base layer: yandex (EPSG3395)</button>
+    <br>
+    <br>
+    <button class="_traffic_btn">set traffic layer: traffic (EPSG3395)</button>
+    <script>
+    // customize some GridLayer methods
+    L.TileLayerCustomCrs = L.TileLayer.extend({
+
+        _updateLevels: function() {
+
+            var zoom = this._tileZoom,
+                maxZoom = this.options.maxZoom;
+
+            if (zoom === undefined) {
+                return undefined;
+            }
+
+            for (var z in this._levels) {
+                if (this._levels[z].el.children.length || z === zoom) {
+                    this._levels[z].el.style.zIndex = maxZoom - Math.abs(zoom - z);
+                } else {
+                    L.DomUtil.remove(this._levels[z].el);
+                    this._removeTilesAtZoom(z);
+                    delete this._levels[z];
+                }
+            }
+
+            var level = this._levels[zoom],
+                map = this._map;
+
+            if (!level) {
+                level = this._levels[zoom] = {};
+
+                level.el = L.DomUtil.create('div', 'leaflet-tile-container leaflet-zoom-animated', this._container);
+                level.el.style.zIndex = maxZoom;
+
+                level.origin = map.project(map.unproject(map.getPixelOrigin()), zoom).round();
+
+                // custom 
+                // calculate crs level for custom crs
+                // 
+                level.__customCrsLevel = {};
+
+                var a = map._getNewPixelOrigin(
+                    map.getCenter(),
+                    undefined,
+                    this.options.crs
+                );
+
+                var b = map.unproject(
+                    a,
+                    undefined,
+                    this.options.crs
+                );
+
+                level.__customCrsLevel.origin = map.project(
+                    b,
+                    zoom,
+                    this.options.crs
+                ).round();
+
+                // end of custom 
+
+                level.zoom = zoom;
+
+                this._setZoomTransform(level, map.getCenter(), map.getZoom());
+
+                // force the browser to consider the newly added element for transition
+                L.Util.falseFn(level.el.offsetWidth);
+            }
+
+            this._level = level;
+
+            // custom
+            this.__customCrsLevel = level.__customCrsLevel;
+            // end of custom
+
+            return level;
+        },
+
+
+        _getTiledPixelBounds: function(center) {
+
+            var map = this._map;
+
+            var crs = (this._hasDifferentCrs) ? this.options.crs : null;
+
+            // custom (add this.options.crs in project method call)
+            var pixelCenter = map.project(center, this._tileZoom, crs).floor();
+            // end of custom
+
+            var halfSize = map.getSize().divideBy(2);
+
+            return new L.Bounds(pixelCenter.subtract(halfSize), pixelCenter.add(halfSize));
+        },
+
+        _getTilePos: function(coords) {
+
+            // custom
+            if (this._hasDifferentCrs()) {
+                return coords.scaleBy(this.getTileSize()).subtract(this.__customCrsLevel.origin);
+            } else {
+                return coords.scaleBy(this.getTileSize()).subtract(this._level.origin);
+            }
+            // end of custom
+        },
+
+
+        _hasDifferentCrs() {
+            return this.options.crs && this._map.options.crs != this.options.crs;
+        }
+
+    });
+
+
+    // init layers
+
+    // EPSG3857
+    var gisLayer = L.tileLayer(
+        'http://tile{s}.maps.2gis.com/tiles?x={x}&y={y}&z={z}&v=1', {
+            subdomains: ['0', '1', '2', '3'],
+            attribution: '2gis.ru',
+            reuseTiles: true,
+            updateWhenIdle: false
+        });
+
+    // EPSG3395
+    var yandexLayer = L.tileLayer(
+        'http://vec{s}.maps.yandex.net/tiles?l=map&v=4.55.2&z={z}&x={x}&y={y}&scale=1&lang=ru_RU', {
+            subdomains: ['01', '02', '03', '04'],
+            attribution: 'yandex.ru',
+            reuseTiles: true,
+            updateWhenIdle: false,
+            crs: L.CRS.EPSG3395
+        }
+    );
+
+    // EPSG3395
+    var trafficLayer = new L.TileLayerCustomCrs(
+        'http://jgo.maps.yandex.net/1.1/tiles?l=trf,trfe&lang=ru_RU&x={x}&y={y}&z={z}&scale=1&tm=1450856219', {
+            attribution: 'yandex.ru traffic layer',
+            reuseTiles: true,
+            updateWhenIdle: false,
+
+            // set custom crs for layer
+            crs: L.CRS.EPSG3395
+        }
+    );
+
+
+    var map = L.map('map', {
+        center: [55.7522200, 37.6155600],
+        zoom: 12
+    });
+
+
+    // toggle base layer and crs
+    var setBaseLayer = function(name) {
+
+        var layer;
+
+        if (name == 'yandex') {
+            layer = yandexLayer;
+        } else {
+            layer = gisLayer;
+        }
+
+        if (name == 'yandex') {
+            map.removeLayer(gisLayer);
+        } else {
+            map.removeLayer(yandexLayer);
+        }
+
+        var center = map.getCenter();
+
+        if (name == 'yandex') {
+            map.options.crs = L.CRS.EPSG3395;
+        } else {
+            map.options.crs = L.CRS.EPSG3857;
+        }
+
+        map.setView(center);
+
+        map._resetView(map.getCenter(), map.getZoom());
+
+        map.addLayer(layer);
+
+        if (map.hasLayer(trafficLayer)) {
+            trafficLayer.bringToFront();
+        }
+    };
+
+    map.addLayer(gisLayer);
+    map.addLayer(trafficLayer);
+
+
+
+    // buttons 
+    $('._gis_btn').click(function() {
+        setBaseLayer('gis');
+    });
+
+    $('._yandex_btn').click(function() {
+        setBaseLayer('yandex');
+    });
+
+    $('._traffic_btn').click(function() {
+
+        if (map.hasLayer(trafficLayer)) {
+            map.removeLayer(trafficLayer);
+        } else {
+            map.addLayer(trafficLayer);
+        }
+
+    });
+    </script>
+</body>
+
+</html>

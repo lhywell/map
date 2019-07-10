@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>地图集合</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
+    <!-- <script src="./source.js"></script> -->
+    <script src="Proj4Leaflet/lib/proj4.js"></script>
+    <script src="Proj4Leaflet/src/proj4leaflet.js"></script>
+    <script src="./plugin.mjs"></script>
+    <style type="text/css">
+    body,
+    html {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: "微软雅黑";
+    }
+    /*css滤镜改变地图图片颜色*/
+    /*.leaflet-zoom-animated img {
+        -webkit-filter: invert(1) grayscale(0) saturate(0.5) brightness(1.6) opacity(1) hue-rotate(334deg) sepia(10%) !important;
+        -ms-filter: invert(1) grayscale(0) saturate(0.5) brightness(1.6) opacity(1) hue-rotate(334deg) sepia(10%) !important;
+        -moz-filter: invert(1) grayscale(0) saturate(0.5) brightness(1.6) opacity(1) hue-rotate(334deg) sepia(10%) !important;
+        filter: invert(1) grayscale(0) saturate(0.5) brightness(1.6) opacity(1) hue-rotate(334deg) sepia(1%) !important;
+    }*/
+    </style>
+</head>
+
+<body>
+    <div id="map" style="width: 100vw;height: 100vh"></div>
+    <script>
+    let map = L.map("map", {
+        center: [39.91349, 116.407945],
+        zoom: 12,
+        layers: [L.M.GoogleMap],
+        zoomControl: false
+    });
+
+    let center = map.getCenter();
+
+    //https://github.com/Leaflet/Leaflet/issues/2553
+    //https://github.com/Leaflet/Leaflet/issues/3677
+
+    map.on('baselayerchange', function(layer) {
+        let center = map.getCenter();
+        let zoom = map.getZoom();
+        if (layer.name.indexOf('百度') > -1) {
+            map.options.crs = L.CRS.Baidu;
+            map.options.tms = true;
+            map._resetView(center, zoom, true);
+        } else {
+            map.options.crs = L.CRS.EPSG3857;
+            map.options.tms = false;
+            map._resetView(center, zoom, true);
+        }
+    })
+    L.control.layers(L.M.baseLayers, null).addTo(map);
+
+    L.control.zoom({
+        zoomInTitle: '放大',
+        zoomOutTitle: '缩小'
+    }).addTo(map);
+    </script>
+</body>
+
+</html>
