@@ -46,6 +46,7 @@
     map.on('baselayerchange', function(layer) {
         let center = map.getCenter();
         let zoom = map.getZoom();
+        console.log(map.options.crs)
         if (layer.name.indexOf('百度') > -1) {
             map.options.crs = L.CRS.Baidu;
             map.options.tms = true;
