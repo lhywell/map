@@ -2,27 +2,26 @@
 <html>
 
 <head>
-    <title>Quick Start - Leaflet</title>
+    <title>天地图|高德地图|百度地图</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
-    <script src="Proj4Leaflet/lib/proj4.js"></script>
-    <script src="Proj4Leaflet/src/proj4leaflet.js"></script>
+    <script src="./Proj4Leaflet/lib/proj4.js"></script>
+    <script src="./Proj4Leaflet/src/proj4leaflet.js"></script>
 </head>
 
 <body>
     <div id="mapid" style="width: 1024px; height: 600px"></div>
     <div>
-        
     </div>
     <button id="button1">天地图</button>
     <button id="button2">高德地图</button>
     <button id="button3">百度地图</button>
     <script>
     console.log(L)
-
-    var mymap = L.map('mapid').setView([39.90960456049752, 116.3972282409668], 13);
+    let center = [39.90960456049752, 116.3972282409668]
+    var mymap = L.map('mapid').setView(center, 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: ''
@@ -44,12 +43,15 @@
         mapObject.url =
             'http://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}'
         mapObject.subdomains = "1234";
+        // defs('EPSG:3857', "+title=WGS 84 / Pseudo-Mercator +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs");
+
+        
         setUp(mapObject)
     }
     document.getElementById('button3').onclick = function() {
         mapObject.title = 'baidu地图';
         mapObject.url =
-            'http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1&udt=20170406'
+            'http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1'
         mapObject.subdomains = "01234";
 
 
@@ -74,16 +76,25 @@
             return res;
         };
 
-        var crs = new L.Proj.CRS('BDProj',
-            '+proj=merc +a=6378206.4 +b=6356583.8 +lat_ts=0.0 +lon_0=0.0 +x_0=0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs', {
-                resolutions: get_resolution(),
+        var crs = new L.Proj.CRS(
+            'EPSG:900913',
+            '+proj=merc +a=6378206 +b=6356584.314245179 +lat_ts=0.0 +lon_0=0.0 +x_0=0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs', {
+                resolutions: (function() {
+                    level = 21;
+                    var res = [];
+                    res[0] = Math.pow(2, 18);
+                    for (var i = 1; i < level; i++) {
+                        res[i] = Math.pow(2, 18 - i);
+                    }
+                    return res;
+                })(),
                 origin: [0, 0],
-                bounds: L.bounds([0, 20037508.342789244], [20037508.342789244, 0])
-            });
+                bounds: L.bounds([20037508.342789244, 0], [0, 20037508.342789244]),
+            }
+        );
 
-        var mymap = L.map('mapid', {
-            crs: crs
-        }).setView(convertCoors([39.90960456049752, 116.3972282409668]), 13);
+        mymap.options.crs = crs;
+        mymap.setView(convertCoors(center), 13);
 
         L.tileLayer(mapObject.url, {
             maxZoom: 18,
@@ -91,12 +102,11 @@
             subdomains: mapObject.subdomains,
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
                 '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-            id: 'mapbox.streets',
+                'Imagery © <a href="http://mapbox.com">Baidu</a>',
             tms: true
         }).addTo(mymap);
 
-        L.marker([39.90960456049752, 116.3972282409668]).addTo(mymap)
+        L.marker(convertCoors(center)).addTo(mymap)
             .bindPopup(mapObject.title).openPopup();
     }
 
@@ -113,7 +123,7 @@
             id: 'mapbox.streets'
         }).addTo(mymap);
 
-        L.marker([39.90960456049752, 116.3972282409668]).addTo(mymap)
+        L.marker(center).addTo(mymap)
             .bindPopup(mapObject.title).openPopup();
 
         // L.circle([51.508, -0.11], 500, {

@@ -1,42 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>测试</title>
-    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" type="text/css" rel="stylesheet"/>
+    <title>百度地图</title>
+    <link href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" type="text/css" rel="stylesheet" />
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-    <script src="Proj4Leaflet/lib/proj4.js"></script>
-    <script src="Proj4Leaflet/src/proj4leaflet.js"></script>
+    <script src="./Proj4Leaflet/lib/proj4.js"></script>
+    <script src="./Proj4Leaflet/src/proj4leaflet.js"></script>
 </head>
+
 <body>
-<div id="map" style="width: 100vw;height: 100vh"></div>
-<script>
-    var crs = new L.Proj.CRS('EPSG:900913',
-        '+proj=merc +a=6378206 +b=6356584.314245179 +lat_ts=0.0 +lon_0=0.0 +x_0=0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs',
-        {
-            resolutions: function () {
-                level = 19;
-                var res = [];
-                res[0] = Math.pow(2, 18);
-                for (var i = 1; i < level; i++) {
-                    res[i] = Math.pow(2, (18 - i))
-                }
-                return res;
-            }(),
-            origin: [0,0],
-            bounds: L.bounds([20037508.342789244, 0], [0, 20037508.342789244])
-        }),
+    <div id="map" style="width: 100vw;height: 100vh"></div>
+    <script>
+    var crs = new L.Proj.CRS(
+            'EPSG:900913',
+            '+proj=merc +a=6378206 +b=6356584.314245179 +lat_ts=0.0 +lon_0=0.0 +x_0=0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs', {
+                resolutions: (function() {
+                    level = 21;
+                    var res = [];
+                    res[0] = Math.pow(2, 18);
+                    for (var i = 1; i < level; i++) {
+                        res[i] = Math.pow(2, 18 - i);
+                    }
+                    return res;
+                })(),
+                origin: [0, 0],
+                bounds: L.bounds([20037508.342789244, 0], [0, 20037508.342789244]),
+            }
+        ),
         map = L.map('map', {
             crs: crs
         });
- 
-    new L.TileLayer('http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl&udt=20150518', {
+
+    new L.TileLayer('http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl', {
         maxZoom: 18,
         minZoom: 3,
-        subdomains: [0,1,2],
+        subdomains: [0, 1, 2, 3, 4, 5],
         tms: true
     }).addTo(map);
-    map.setView([39.915052,116.403954], 15);
-</script>
+    map.setView([39.915052, 116.403954], 15);
+    </script>
 </body>
+
 </html>
